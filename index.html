@@ -32,11 +32,21 @@
       </header>
 
       <nav class="main-nav" aria-label="Главное меню">
-        <button class="nav-button is-active" type="button" data-screen="garage" aria-current="page">Гараж</button>
-        <button class="nav-button" type="button" data-screen="races">Гонки</button>
-        <button class="nav-button" type="button" data-screen="collection">Коллекция</button>
-        <button class="nav-button" type="button" data-screen="tasks">Задания</button>
-        <button class="nav-button" type="button" data-screen="profile">Профиль</button>
+        <button class="nav-button is-active" type="button" data-screen="garage" aria-current="page">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5M5.5 10v10h13V10M9 20v-6h6v6"/></svg><span>Гараж</span>
+        </button>
+        <button class="nav-button" type="button" data-screen="games">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12a3 3 0 0 1 2.8 4l-1.6 4a2 2 0 0 1-3.1.8L13.5 14h-3l-2.6 2.8a2 2 0 0 1-3.1-.8l-1.6-4A3 3 0 0 1 6 8Z"/><path d="M7 10v4m-2-2h4m7-1h.01M17 13h.01"/></svg><span>Игры</span>
+        </button>
+        <button class="nav-button" type="button" data-screen="friends">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c.5-2.7 2.3-4 5.5-4s5 1.3 5.5 4M16 5.5a3 3 0 0 1 0 5.8m2 3c1.7.7 2.5 2.2 2.7 4.7"/></svg><span>Друзья</span>
+        </button>
+        <button class="nav-button" type="button" data-screen="rating">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16M6 19V9h4v10m4 0V5h4v14"/></svg><span>Рейтинг</span>
+        </button>
+        <button class="nav-button" type="button" data-screen="profile">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.7-3.2 3.2-5 7-5s6.3 1.8 7 5"/></svg><span>Профиль</span>
+        </button>
       </nav>
 
       <main>
@@ -52,7 +62,10 @@
 
         <section class="garage-section" aria-label="Автомобили в гараже">
           <div class="section-heading">
-            <h2>Мои автомобили</h2>
+            <div>
+              <p class="eyebrow">КОЛЛЕКЦИЯ АВТОМОБИЛЕЙ</p>
+              <h2>Мой гараж</h2>
+            </div>
             <span class="section-hint">Выбери две машины для объединения</span>
           </div>
           <div class="car-grid" id="car-grid"></div>
@@ -95,13 +108,45 @@
         </section>
         </section>
 
-        <section class="screen" id="screen-races" data-screen-panel="races" hidden>
+        <section class="screen" id="screen-games" data-screen-panel="games" hidden>
           <div class="screen-heading">
-            <p class="eyebrow"><span class="live-dot"></span> ГОРОДСКАЯ СЕРИЯ</p>
-            <h1>Гонки<span class="title-period">.</span></h1>
-            <p class="intro-text">Выбери машину, настрой заезд и проверь себя на трассе.</p>
+            <p class="eyebrow"><span class="live-dot"></span> ИГРОВАЯ ПЛАТФОРМА</p>
+            <h1>Игры<span class="title-period">.</span></h1>
+            <p class="intro-text">Выбирай режим и соревнуйся. Новые игры появятся здесь.</p>
           </div>
 
+          <section class="game-catalog" id="game-catalog" aria-label="Список игр">
+            <article class="game-card game-card-featured">
+              <div class="game-card-art" aria-hidden="true"><span>01</span><i></i><b>RACE<br>CLUB</b></div>
+              <div class="game-card-copy">
+                <p class="eyebrow">ГОРОДСКАЯ СЕРИЯ · СЕЗОН 01</p>
+                <h2>Уличные гонки</h2>
+                <p>Выбери автомобиль, настрой заезд и брось вызов сопернику.</p>
+                <button class="button button-primary" type="button" data-open-game="races">Играть <span aria-hidden="true">↗</span></button>
+              </div>
+              <span class="game-card-status"><i></i> ДОСТУПНО</span>
+            </article>
+            <article class="game-card game-card-coming">
+              <span class="game-coming-mark" aria-hidden="true">+</span>
+              <div><p class="eyebrow">НОВЫЙ РЕЖИМ</p><h2>Скоро в клубе</h2><p>Здесь появятся новые самостоятельные игры.</p></div>
+              <span class="coming-label">В РАЗРАБОТКЕ</span>
+            </article>
+            <section class="game-tasks" aria-labelledby="rider-tasks-title">
+              <div class="section-heading">
+                <div><p class="eyebrow">ПУТЬ К МАСТЕРСТВУ</p><h2 id="rider-tasks-title">Задания гонщика</h2></div>
+              </div>
+              <div class="task-list" id="task-list"></div>
+            </section>
+          </section>
+
+          <div class="game-content" id="game-content" hidden>
+            <div class="game-content-heading">
+              <button class="text-button game-back" type="button" data-return-gamehub>← Все игры</button>
+              <div>
+                <p class="eyebrow">ИГРА 01 · ГОРОДСКАЯ СЕРИЯ</p>
+                <h2>Уличные гонки</h2>
+              </div>
+            </div>
           <div class="race-layout">
             <section class="race-setup panel-card" aria-labelledby="race-setup-title">
               <div class="panel-heading">
@@ -181,29 +226,52 @@
               <div><strong id="race-rewards">0</strong><span>CR НАГРАД</span></div>
             </div>
           </section>
+          </div>
         </section>
 
-        <section class="screen" id="screen-collection" data-screen-panel="collection" hidden>
+        <section class="screen" id="screen-friends" data-screen-panel="friends" hidden>
           <div class="screen-heading">
-            <p class="eyebrow">ТВОЙ АВТОПАРК</p>
-            <h1>Коллекция<span class="title-period">.</span></h1>
-            <p class="intro-text">Все автомобили, собранные в гараже AUTOGEN.</p>
+            <p class="eyebrow">ТВОЙ КРУГ</p>
+            <h1>Друзья<span class="title-period">.</span></h1>
+            <p class="intro-text">Собирай компанию для будущих заездов и совместных игр.</p>
           </div>
-          <div class="collection-overview panel-card">
-            <span class="collection-count" id="collection-count">00</span>
-            <span>автомобилей в коллекции</span>
-            <button class="text-button" type="button" data-go-screen="garage">Перейти в гараж <span aria-hidden="true">↗</span></button>
-          </div>
-          <div class="collection-grid" id="collection-grid"></div>
+          <section class="friends-panel panel-card" aria-labelledby="friends-title">
+            <div class="panel-heading">
+              <div><p class="eyebrow">СООБЩЕСТВО</p><h2 id="friends-title">Друзья AUTOGEN</h2></div>
+              <span class="connection-badge"><i></i> ОФЛАЙН-РЕЖИМ</span>
+            </div>
+            <label class="field-label" for="friend-search">Найти игрока</label>
+            <div class="friends-search">
+              <input class="field-control" id="friend-search" type="search" placeholder="Поиск будет доступен онлайн" disabled>
+              <button class="button button-secondary" type="button" disabled>Найти</button>
+            </div>
+            <div class="friends-empty">
+              <span class="friends-empty-mark" aria-hidden="true">+</span>
+              <h3>Список друзей появится здесь</h3>
+              <p>Поиск и приглашения станут доступны после подключения сервера. Сейчас игра сохраняет прогресс только на этом устройстве.</p>
+              <button class="button button-secondary" type="button" disabled>Пригласить друга</button>
+            </div>
+          </section>
         </section>
 
-        <section class="screen" id="screen-tasks" data-screen-panel="tasks" hidden>
+        <section class="screen" id="screen-rating" data-screen-panel="rating" hidden>
           <div class="screen-heading">
-            <p class="eyebrow">ПУТЬ К МАСТЕРСТВУ</p>
-            <h1>Задания<span class="title-period">.</span></h1>
-            <p class="intro-text">Каждый заезд приближает к следующему уровню.</p>
+            <p class="eyebrow">СЕЗОН 01 · ГОРОДСКАЯ СЕРИЯ</p>
+            <h1>Рейтинг<span class="title-period">.</span></h1>
+            <p class="intro-text">Соревнуйся, побеждай и поднимайся в таблице лидеров.</p>
           </div>
-          <div class="task-list" id="task-list"></div>
+          <section class="leaderboard panel-card" aria-labelledby="leaderboard-title">
+            <div class="panel-heading">
+              <div><p class="eyebrow">ГЛОБАЛЬНАЯ ТАБЛИЦА</p><h2 id="leaderboard-title">Лучшие гонщики</h2></div>
+              <span class="connection-badge"><i></i> СЕРВЕР НЕ ПОДКЛЮЧЁН</span>
+            </div>
+            <div class="leaderboard-head" aria-hidden="true"><span>МЕСТО</span><span>ИГРОК</span><span>ОЧКИ</span><span>ПОБЕДЫ</span></div>
+            <div class="leaderboard-empty">
+              <span class="leaderboard-emblem" aria-hidden="true">A</span>
+              <h3>Глобальный рейтинг скоро появится</h3>
+              <p>Таблица лидеров станет доступна после подключения общего сервера. Здесь пока нет фиктивных игроков или результатов.</p>
+            </div>
+          </section>
         </section>
 
         <section class="screen" id="screen-profile" data-screen-panel="profile" hidden>
@@ -229,6 +297,18 @@
             <article class="panel-card"><span>ПОБЕДЫ</span><strong id="profile-wins">0</strong></article>
             <article class="panel-card"><span>АВТОМОБИЛИ</span><strong id="profile-cars">0</strong></article>
           </div>
+          <section class="profile-currencies">
+            <div class="panel-heading"><div><p class="eyebrow">ТВОЙ БАЛАНС</p><h2>Игровые валюты</h2></div></div>
+            <div class="currency-cards">
+              <article class="currency-card currency-card-credits"><span class="currency-icon" aria-hidden="true">◈</span><div><span>CREDITS</span><strong id="profile-credits">0</strong><small>CR · основная валюта</small></div></article>
+              <article class="currency-card currency-card-tech"><span class="currency-icon" aria-hidden="true">⬡</span><div><span>TECH CORES</span><strong id="profile-tech-cores">0</strong><small>TC · редкий ресурс</small></div></article>
+            </div>
+            <p class="payment-note">Баланс игровой валюты. Платежи и Telegram Stars не подключены.</p>
+          </section>
+          <section class="profile-achievements panel-card">
+            <div class="panel-heading"><div><p class="eyebrow">ТВОИ РЕЗУЛЬТАТЫ</p><h2>Достижения</h2></div></div>
+            <div class="achievement-list" id="profile-achievements"></div>
+          </section>
         </section>
       </main>
 

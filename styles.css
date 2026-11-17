@@ -756,6 +756,598 @@ h1 {
   }
 }
 
+.game-content[hidden],
+.game-catalog[hidden] {
+  display: none;
+}
+
+.game-catalog {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(220px, 0.75fr);
+  gap: 16px;
+}
+
+.game-card {
+  position: relative;
+  display: flex;
+  min-height: 225px;
+  overflow: hidden;
+  align-items: center;
+  gap: 24px;
+  padding: 23px;
+  border: 1px solid #293536;
+  border-radius: 16px;
+  background: linear-gradient(140deg, #1a2322, #121718 70%);
+  box-shadow: 0 15px 40px rgb(0 0 0 / 15%);
+}
+
+.game-card-featured {
+  border-color: rgb(200 243 109 / 20%);
+  background:
+    radial-gradient(ellipse at 10% 110%, rgb(200 243 109 / 12%), transparent 58%),
+    linear-gradient(140deg, #1a2322, #121718 70%);
+}
+
+.game-card-art {
+  position: relative;
+  display: grid;
+  width: 184px;
+  height: 174px;
+  flex: 0 0 184px;
+  overflow: hidden;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 8%);
+  border-radius: 12px;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 24px, rgb(255 255 255 / 3%) 25px, transparent 26px),
+    linear-gradient(145deg, #26312d, #121718 75%);
+}
+
+.game-card-art::before,
+.game-card-art::after {
+  position: absolute;
+  content: "";
+}
+
+.game-card-art::before {
+  inset: auto -20% -44%;
+  height: 90%;
+  border: 1px solid rgb(200 243 109 / 22%);
+  border-radius: 50%;
+  transform: perspective(200px) rotateX(62deg);
+}
+
+.game-card-art::after {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(transparent, rgb(255 255 255 / 9%), transparent);
+}
+
+.game-card-art > span {
+  position: absolute;
+  z-index: 1;
+  top: 12px;
+  left: 13px;
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+}
+
+.game-card-art > i {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border: 1px solid rgb(200 243 109 / 16%);
+  border-radius: 50%;
+  transform: scaleY(0.55) rotate(-23deg);
+}
+
+.game-card-art > b {
+  z-index: 1;
+  color: rgb(255 255 255 / 12%);
+  font-family: var(--font-display);
+  font-size: 35px;
+  font-weight: 800;
+  letter-spacing: -0.07em;
+  line-height: 0.9;
+  text-align: center;
+  transform: skew(-8deg);
+}
+
+.game-card-copy {
+  max-width: 380px;
+  padding-right: 58px;
+}
+
+.game-card-copy .eyebrow {
+  margin-bottom: 8px;
+  color: var(--accent);
+  font-size: 8px;
+}
+
+.game-card-copy h2,
+.game-card-coming h2 {
+  margin: 0 0 7px;
+  font-size: 24px;
+  letter-spacing: -0.06em;
+}
+
+.game-card-copy > p:not(.eyebrow),
+.game-card-coming p:not(.eyebrow) {
+  margin: 0 0 15px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.game-card-copy .button {
+  min-width: 132px;
+}
+
+.game-card-status,
+.coming-label,
+.connection-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  white-space: nowrap;
+}
+
+.game-card-status {
+  position: absolute;
+  top: 17px;
+  right: 18px;
+  color: var(--accent);
+}
+
+.game-card-status i,
+.connection-badge i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.game-card-coming {
+  min-height: 225px;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+  gap: 15px;
+  border-style: dashed;
+  background: linear-gradient(145deg, rgb(255 255 255 / 2%), transparent), #131819;
+}
+
+.game-coming-mark {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid #394342;
+  border-radius: 10px;
+  color: #a4afaa;
+  font-size: 21px;
+}
+
+.game-card-coming .eyebrow {
+  margin-bottom: 6px;
+  color: #a4afaa;
+  font-size: 8px;
+}
+
+.game-card-coming h2 {
+  font-size: 17px;
+}
+
+.game-card-coming p:not(.eyebrow) {
+  margin-bottom: 0;
+  font-size: 10px;
+}
+
+.game-tasks {
+  grid-column: 1 / -1;
+  padding-top: 6px;
+}
+
+.game-tasks .section-heading {
+  margin-bottom: 12px;
+}
+
+.coming-label {
+  padding: 6px 8px;
+  border: 1px solid #303a39;
+  border-radius: 5px;
+  font-size: 7px;
+}
+
+.game-content-heading {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 4px 0 18px;
+}
+
+.game-content-heading h2 {
+  margin: 0;
+  font-size: 23px;
+  letter-spacing: -0.06em;
+}
+
+.game-content-heading .eyebrow {
+  margin-bottom: 3px;
+  color: var(--accent);
+  font-size: 8px;
+}
+
+.game-back {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid #303a39;
+  border-radius: 8px;
+  color: #cbd4ce;
+}
+
+.game-content .race-history + .race-history {
+  margin-top: 16px;
+}
+
+.friends-panel,
+.leaderboard,
+.profile-currencies,
+.profile-achievements {
+  padding: 22px;
+}
+
+.connection-badge {
+  padding: 7px 9px;
+  border: 1px solid #394342;
+  border-radius: 999px;
+  font-size: 7px;
+}
+
+.connection-badge i {
+  background: #858e89;
+}
+
+.friends-search {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.friends-search .field-control:disabled {
+  color: #7e8984;
+  opacity: 0.75;
+}
+
+.friends-search .button:disabled,
+.friends-empty .button:disabled {
+  opacity: 0.55;
+}
+
+.friends-empty,
+.leaderboard-empty {
+  display: flex;
+  min-height: 235px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 30px 20px;
+  text-align: center;
+}
+
+.friends-empty-mark,
+.leaderboard-emblem {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  margin-bottom: 14px;
+  border: 1px solid #394342;
+  border-radius: 14px;
+  color: #a8b2ac;
+  font-size: 23px;
+}
+
+.friends-empty h3,
+.leaderboard-empty h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  letter-spacing: -0.03em;
+}
+
+.friends-empty p,
+.leaderboard-empty p {
+  max-width: 440px;
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+.leaderboard-head {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr) 100px 100px;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid #293334;
+  border-radius: 8px;
+  background: #101516;
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+}
+
+.leaderboard-head span:nth-child(n + 3) {
+  text-align: right;
+}
+
+.leaderboard-empty {
+  min-height: 285px;
+}
+
+.leaderboard-emblem {
+  border-color: rgb(200 243 109 / 27%);
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.profile-currencies,
+.profile-achievements {
+  margin-top: 15px;
+}
+
+.profile-currencies .panel-heading,
+.profile-achievements .panel-heading {
+  margin-bottom: 15px;
+}
+
+.profile-currencies .panel-heading h2,
+.profile-achievements .panel-heading h2 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.currency-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.currency-card {
+  display: flex;
+  min-height: 104px;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid #35403c;
+  border-radius: 11px;
+  background: linear-gradient(135deg, rgb(200 243 109 / 6%), transparent 80%), #111617;
+}
+
+.currency-card > .currency-icon {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  place-items: center;
+  border: 1px solid rgb(200 243 109 / 24%);
+  border-radius: 12px;
+  background: rgb(200 243 109 / 6%);
+  font-size: 21px;
+}
+
+.currency-card > div {
+  display: grid;
+  gap: 2px;
+}
+
+.currency-card > div > span {
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+}
+
+.currency-card strong {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-variant-numeric: tabular-nums;
+}
+
+.currency-card small {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.currency-card-tech {
+  border-color: rgb(185 157 245 / 22%);
+  background: linear-gradient(135deg, rgb(185 157 245 / 7%), transparent 80%), #111617;
+}
+
+.currency-card-tech > .currency-icon {
+  border-color: rgb(185 157 245 / 28%);
+  background: rgb(185 157 245 / 8%);
+  color: #b99df5;
+}
+
+.payment-note {
+  margin: 11px 0 0;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.achievement-list {
+  display: grid;
+  gap: 8px;
+}
+
+.achievement {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #293334;
+  border-radius: 9px;
+  background: #111617;
+}
+
+.achievement.is-unlocked {
+  border-color: rgb(200 243 109 / 25%);
+  background: linear-gradient(110deg, rgb(200 243 109 / 5%), transparent 70%), #111617;
+}
+
+.achievement-mark {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 1px solid #394342;
+  border-radius: 9px;
+  color: #77827c;
+  font-size: 13px;
+}
+
+.achievement.is-unlocked .achievement-mark {
+  border-color: rgb(200 243 109 / 30%);
+  color: var(--accent);
+}
+
+.achievement h3 {
+  margin: 0 0 2px;
+  font-size: 11px;
+}
+
+.achievement p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.achievement-state {
+  color: #77827c;
+  font-family: var(--font-display);
+  font-size: 7px;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.achievement.is-unlocked .achievement-state {
+  color: var(--accent);
+}
+
+@media (max-width: 760px) {
+  .game-catalog {
+    grid-template-columns: 1fr;
+  }
+
+  .game-card-coming {
+    min-height: 150px;
+  }
+}
+
+@media (max-width: 650px) {
+  .game-card {
+    min-height: 0;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 17px;
+    padding: 15px;
+  }
+
+  .game-card-art {
+    width: 100%;
+    height: 150px;
+    flex-basis: 150px;
+  }
+
+  .game-card-copy {
+    padding: 0 0 2px;
+  }
+
+  .game-card-status {
+    top: 26px;
+    right: 26px;
+  }
+
+  .game-card-coming {
+    min-height: 140px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .game-card-coming > div {
+    min-width: 0;
+  }
+
+  .coming-label {
+    margin-left: auto;
+  }
+
+  .game-content-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .game-back {
+    min-height: 36px;
+  }
+
+  .friends-panel,
+  .leaderboard,
+  .profile-currencies,
+  .profile-achievements {
+    padding: 15px;
+  }
+
+  .friends-panel .panel-heading,
+  .leaderboard .panel-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .leaderboard-head {
+    grid-template-columns: 48px minmax(0, 1fr) 58px 58px;
+    gap: 5px;
+    padding: 10px 7px;
+    font-size: 6px;
+  }
+
+  .currency-cards {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .currency-card {
+    min-height: 82px;
+    padding: 12px;
+  }
+
+  .achievement {
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 9px;
+  }
+
+  .achievement-state {
+    grid-column: 2;
+  }
+}
+
 .main-nav {
   display: flex;
   justify-content: center;
@@ -1607,5 +2199,832 @@ h1 {
   .race-track.is-racing .track-car-opponent {
     animation: none;
     transform: translateX(62%);
+  }
+}
+
+:root {
+  --page: #0c0f10;
+  --panel: #14191a;
+  --panel-raised: #1b2223;
+  --line: #293233;
+  --muted: #899393;
+  --text: #f1f4ef;
+  --accent: #c8f36d;
+  --accent-dark: #9dc94e;
+  --font-display: "Inter", "SF Pro Display", "Segoe UI", sans-serif;
+  --font-body: "Inter", "SF Pro Text", "Segoe UI", sans-serif;
+  --surface-shadow: 0 18px 50px rgb(0 0 0 / 24%);
+}
+
+html {
+  min-height: 100%;
+  background: var(--page);
+  scroll-behavior: smooth;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 12% 0%, rgb(200 243 109 / 7%), transparent 29rem),
+    radial-gradient(ellipse at 100% 25%, rgb(94 120 118 / 10%), transparent 31rem),
+    linear-gradient(160deg, #0c0f10, #101516 56%, #0b0e0f);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+button,
+select,
+input {
+  font-family: var(--font-body);
+}
+
+button:focus-visible,
+a:focus-visible,
+select:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.app-shell {
+  width: min(100% - 44px, 1180px);
+}
+
+.topbar {
+  min-height: 82px;
+  border-color: rgb(255 255 255 / 8%);
+}
+
+.brand {
+  gap: 12px;
+  font-size: 14px;
+  letter-spacing: 0.18em;
+}
+
+.brand-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: rgb(200 243 109 / 5%);
+  box-shadow: 0 0 22px rgb(200 243 109 / 9%);
+}
+
+.wallet {
+  min-height: 40px;
+  padding: 8px 12px;
+  border-color: rgb(255 255 255 / 8%);
+  background: linear-gradient(145deg, #1a2020, #141819);
+  box-shadow: inset 0 1px rgb(255 255 255 / 4%);
+  font-variant-numeric: tabular-nums;
+}
+
+.wallet-credit .currency-icon {
+  color: var(--accent);
+}
+
+.wallet-tech {
+  border-color: rgb(177 151 244 / 21%);
+  background: linear-gradient(145deg, #211d2b, #17151e);
+}
+
+.intro,
+.screen-heading {
+  padding-top: 45px;
+  padding-bottom: 30px;
+}
+
+.eyebrow {
+  font-size: 9px;
+  letter-spacing: 0.19em;
+}
+
+h1 {
+  font-size: clamp(44px, 7vw, 66px);
+  letter-spacing: -0.075em;
+}
+
+.intro-text {
+  max-width: 520px;
+  line-height: 1.65;
+}
+
+.section-heading {
+  margin-bottom: 18px;
+}
+
+.section-heading h2 {
+  font-size: 18px;
+  letter-spacing: -0.04em;
+}
+
+.main-nav {
+  position: sticky;
+  z-index: 8;
+  top: 0;
+  justify-content: flex-start;
+  gap: 5px;
+  margin: 0 -12px 12px;
+  padding: 12px;
+  border-bottom-color: rgb(255 255 255 / 7%);
+  background: rgb(12 15 16 / 88%);
+  backdrop-filter: blur(18px);
+}
+
+.nav-button {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  font-size: 11px;
+  transition: color 180ms ease, background 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+
+.nav-button:hover {
+  transform: translateY(-1px);
+}
+
+.nav-button.is-active {
+  border-color: rgb(200 243 109 / 15%);
+  background: linear-gradient(135deg, rgb(200 243 109 / 12%), rgb(200 243 109 / 5%));
+  box-shadow: inset 0 1px rgb(255 255 255 / 4%);
+}
+
+.nav-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
+}
+
+.car-grid {
+  gap: 18px;
+}
+
+.car-card,
+.collection-card {
+  border-color: #293233;
+  border-radius: 15px;
+  background: linear-gradient(150deg, rgb(255 255 255 / 3%), transparent 48%), #14191a;
+  box-shadow: 0 10px 28px rgb(0 0 0 / 12%);
+}
+
+.car-card:hover,
+.collection-card:hover {
+  border-color: #43504c;
+  box-shadow: var(--surface-shadow);
+  transform: translateY(-3px);
+}
+
+.car-card.is-selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px rgb(200 243 109 / 30%), 0 15px 40px rgb(0 0 0 / 30%);
+}
+
+.car-art {
+  height: 224px;
+  border-bottom: 1px solid rgb(255 255 255 / 6%);
+  background: #101515;
+}
+
+.car-art::before {
+  bottom: 20px;
+  opacity: 0.65;
+}
+
+.car-art::after {
+  top: 22px;
+  right: 20px;
+  width: 92px;
+  height: 92px;
+  border-color: rgb(255 255 255 / 6%);
+}
+
+.vehicle-visual {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(ellipse at 50% 70%, color-mix(in srgb, var(--vehicle-accent) 16%, transparent), transparent 40%),
+    linear-gradient(135deg, #202929, #111617 57%, #202626);
+  isolation: isolate;
+}
+
+.vehicle-visual::before,
+.vehicle-visual::after {
+  position: absolute;
+  z-index: -1;
+  content: "";
+  pointer-events: none;
+}
+
+.vehicle-visual::before {
+  inset: 0;
+  background:
+    linear-gradient(112deg, transparent 0 34%, rgb(255 255 255 / 3%) 34.2%, transparent 34.5% 68%, rgb(255 255 255 / 3%) 68.2%, transparent 68.5%),
+    repeating-linear-gradient(0deg, transparent 0 30px, rgb(255 255 255 / 2%) 31px, transparent 32px);
+  mask-image: linear-gradient(transparent, #000 20%, #000 84%, transparent);
+}
+
+.vehicle-visual::after {
+  right: -15%;
+  bottom: -96%;
+  left: -15%;
+  height: 150%;
+  border: 1px solid color-mix(in srgb, var(--vehicle-accent) 22%, transparent);
+  border-radius: 50%;
+  box-shadow:
+    0 -16px 0 -15px rgb(255 255 255 / 15%),
+    0 -34px 0 -33px rgb(255 255 255 / 8%);
+  transform: perspective(300px) rotateX(56deg);
+}
+
+.visual-index {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #a4afaa;
+  font-family: var(--font-display);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+}
+
+.visual-index i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--vehicle-accent);
+  box-shadow: 0 0 9px var(--vehicle-accent);
+}
+
+.visual-orbit {
+  position: absolute;
+  width: 178px;
+  height: 178px;
+  border: 1px solid rgb(255 255 255 / 7%);
+  border-radius: 50%;
+  transform: scaleY(0.52) rotate(-23deg);
+}
+
+.visual-orbit-one {
+  border-color: color-mix(in srgb, var(--vehicle-accent) 45%, transparent);
+}
+
+.visual-orbit-two {
+  width: 245px;
+  height: 245px;
+  border-color: rgb(255 255 255 / 5%);
+  transform: scaleY(0.52) rotate(35deg);
+}
+
+.visual-initials {
+  color: rgb(255 255 255 / 8%);
+  font-family: var(--font-display);
+  font-size: clamp(74px, 12vw, 126px);
+  font-weight: 800;
+  letter-spacing: -0.12em;
+  line-height: 1;
+  text-shadow: 0 18px 44px rgb(0 0 0 / 28%);
+  transform: translate(-8px, -2px) skew(-7deg);
+  user-select: none;
+}
+
+.visual-caption {
+  position: absolute;
+  bottom: 15px;
+  left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.visual-caption strong {
+  color: #d3dbd5;
+  font-family: var(--font-display);
+  font-size: 8px;
+  letter-spacing: 0.13em;
+}
+
+.visual-caption small {
+  color: #7e8b84;
+  font-size: 7px;
+  letter-spacing: 0.1em;
+}
+
+.visual-coordinate {
+  position: absolute;
+  right: 17px;
+  bottom: 17px;
+  color: color-mix(in srgb, var(--vehicle-accent) 80%, white);
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+}
+
+.car-art .car-photo,
+.collection-art .car-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 57%;
+}
+
+.car-tag {
+  top: 50px;
+  left: 17px;
+  padding: 6px 9px;
+  border-color: rgb(255 255 255 / 13%);
+  background: rgb(10 13 14 / 72%);
+  color: #e4e9e3;
+  font-size: 8px;
+}
+
+.car-rarity {
+  position: absolute;
+  z-index: 3;
+  top: 18px;
+  right: 54px;
+  padding: 5px 7px;
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 5px;
+  background: rgb(10 13 14 / 60%);
+  color: #c1cbc4;
+  font-family: var(--font-display);
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.rarity-rare {
+  border-color: rgb(107 174 240 / 36%);
+  color: #8fc8ff;
+}
+
+.rarity-epic {
+  border-color: rgb(185 157 245 / 38%);
+  color: #c6a9ff;
+}
+
+.select-control {
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border-color: rgb(255 255 255 / 22%);
+  background: rgb(10 13 14 / 68%);
+  color: #f2f5ef;
+}
+
+.select-control:active {
+  transform: scale(0.92);
+}
+
+.car-info {
+  padding: 18px 18px 15px;
+}
+
+.car-name {
+  font-size: 19px;
+  letter-spacing: -0.05em;
+}
+
+.car-trim {
+  max-width: 220px;
+  overflow: hidden;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.car-level {
+  padding: 5px 7px;
+  border-color: rgb(200 243 109 / 23%);
+  background: rgb(200 243 109 / 5%);
+}
+
+.car-stats {
+  gap: 10px;
+  margin: 18px 0 13px;
+  padding: 13px 0;
+  border-top: 1px solid rgb(255 255 255 / 6%);
+  border-bottom: 1px solid rgb(255 255 255 / 6%);
+}
+
+.stat-value {
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-label {
+  font-size: 8px;
+  letter-spacing: 0.05em;
+}
+
+.car-market-value {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 0 12px;
+}
+
+.car-market-value span {
+  color: var(--muted);
+  font-size: 7px;
+  letter-spacing: 0.1em;
+}
+
+.car-market-value strong {
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.car-plate {
+  padding-top: 11px;
+  border-color: rgb(255 255 255 / 7%);
+}
+
+.workshop,
+.showroom {
+  border-radius: 15px;
+  box-shadow: 0 12px 30px rgb(0 0 0 / 10%);
+}
+
+.workshop {
+  border-color: rgb(200 243 109 / 20%);
+  background:
+    radial-gradient(ellipse at 0% 50%, rgb(200 243 109 / 9%), transparent 52%),
+    linear-gradient(135deg, #171d18, #14191a);
+}
+
+.showroom {
+  border-color: #303a39;
+}
+
+.button {
+  min-height: 46px;
+  border-radius: 9px;
+  transition: background 180ms ease, border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+.button:not(:disabled):hover {
+  box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
+  transform: translateY(-1px);
+}
+
+.button-primary {
+  background: linear-gradient(135deg, #d2fa7b, #b9e65e);
+  box-shadow: 0 5px 18px rgb(185 230 94 / 12%);
+}
+
+.button-primary:hover:not(:disabled) {
+  background: #ddff91;
+  box-shadow: 0 8px 25px rgb(185 230 94 / 22%);
+}
+
+.button-secondary {
+  border-color: #394442;
+  background: #202827;
+}
+
+.button:disabled {
+  opacity: 0.62;
+}
+
+.panel-card {
+  border-color: #2a3435;
+  border-radius: 15px;
+  background: linear-gradient(150deg, rgb(255 255 255 / 2.5%), transparent 55%), #14191a;
+  box-shadow: 0 12px 32px rgb(0 0 0 / 12%);
+}
+
+.race-setup,
+.race-stage,
+.race-history {
+  padding: 23px;
+}
+
+.field-control {
+  min-height: 48px;
+  border-color: #303a3b;
+  border-radius: 9px;
+  background-color: #101516;
+}
+
+.race-comparison {
+  border-color: #293333;
+  border-radius: 10px;
+  background: #101516;
+}
+
+.comparison-meter {
+  overflow: hidden;
+  height: 4px;
+  margin-top: 7px;
+  border-radius: 4px;
+  background: #293130;
+}
+
+.comparison-meter span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #91bf48, var(--accent));
+  transition: width 350ms ease;
+}
+
+.comparison-meter.is-opponent span {
+  background: linear-gradient(90deg, #8b74bf, #b99df5);
+}
+
+.race-track {
+  border-color: #303c3b;
+  border-radius: 12px;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgb(200 243 109 / 5%), transparent 55%),
+    repeating-linear-gradient(0deg, #141a19 0 42px, #1a201f 43px 44px);
+}
+
+.track-car .vehicle-visual {
+  border: 1px solid rgb(255 255 255 / 10%);
+  border-radius: 7px;
+}
+
+.track-car .visual-index,
+.track-car .visual-orbit,
+.track-car .visual-caption,
+.track-car .visual-coordinate {
+  display: none;
+}
+
+.track-car .visual-initials {
+  font-size: 42px;
+}
+
+.race-result {
+  border-radius: 12px;
+  animation: result-arrive 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.race-result.is-win {
+  background:
+    radial-gradient(ellipse at 100% 0%, rgb(200 243 109 / 14%), transparent 60%),
+    rgb(200 243 109 / 5%);
+}
+
+.race-result.is-loss {
+  background:
+    radial-gradient(ellipse at 100% 0%, rgb(238 128 106 / 12%), transparent 60%),
+    rgb(238 128 106 / 5%);
+}
+
+.race-result > strong {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 25px;
+  letter-spacing: -0.06em;
+}
+
+@keyframes result-arrive {
+  from { opacity: 0; transform: translateY(8px) scale(0.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.race-history {
+  border-color: #293334;
+}
+
+.collection-art {
+  height: 210px;
+  background: #111617;
+}
+
+.collection-art .vehicle-visual {
+  position: absolute;
+}
+
+.collection-art .visual-initials {
+  font-size: 102px;
+}
+
+.collection-rarity {
+  position: absolute;
+  z-index: 4;
+  top: 12px;
+  left: 13px;
+  padding: 5px 7px;
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 5px;
+  background: rgb(10 13 14 / 72%);
+  color: #d5ded7;
+  font-family: var(--font-display);
+  font-size: 7px;
+  letter-spacing: 0.1em;
+}
+
+.collection-info {
+  padding: 16px 17px;
+}
+
+.task-card {
+  border-radius: 13px;
+}
+
+.profile-card,
+.profile-stats .panel-card {
+  border-radius: 14px;
+}
+
+.footer {
+  padding-bottom: max(34px, env(safe-area-inset-bottom));
+  color: #707b75;
+}
+
+.toast {
+  z-index: 20;
+  border-color: #3a4541;
+  border-radius: 10px;
+  background: #1b2220;
+  box-shadow: var(--surface-shadow);
+}
+
+@media (min-width: 1000px) {
+  .car-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .main-nav {
+    top: 0;
+  }
+
+  .collection-art {
+    height: 190px;
+  }
+}
+
+@media (max-width: 650px) {
+  body {
+    padding-bottom: calc(78px + env(safe-area-inset-bottom));
+  }
+
+  .app-shell {
+    width: min(100% - 30px, 500px);
+  }
+
+  .topbar {
+    min-height: 68px;
+  }
+
+  .wallet {
+    min-height: 36px;
+    padding: 6px 8px;
+  }
+
+  .intro,
+  .screen-heading {
+    padding-top: 32px;
+    padding-bottom: 22px;
+  }
+
+  .main-nav {
+    position: fixed;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    justify-content: space-around;
+    gap: 2px;
+    margin: 0;
+    padding: 7px 7px calc(7px + env(safe-area-inset-bottom));
+    border-top: 1px solid rgb(255 255 255 / 9%);
+    border-bottom: 0;
+    background: rgb(12 15 16 / 94%);
+    box-shadow: 0 -12px 32px rgb(0 0 0 / 22%);
+    backdrop-filter: blur(20px);
+  }
+
+  .nav-button {
+    min-width: 0;
+    min-height: 54px;
+    flex: 1 1 20%;
+    flex-direction: column;
+    gap: 2px;
+    padding: 5px 2px 3px;
+    border-radius: 9px;
+    font-size: 8px;
+    letter-spacing: 0;
+  }
+
+  .nav-icon {
+    width: 18px;
+    height: 18px;
+    flex-basis: 18px;
+  }
+
+  .car-grid {
+    gap: 14px;
+  }
+
+  .car-art {
+    height: 214px;
+  }
+
+  .car-info {
+    padding: 16px 15px 14px;
+  }
+
+  .stat-label {
+    font-size: 7px;
+  }
+
+  .car-market-value span {
+    font-size: 6px;
+  }
+
+  .workshop,
+  .showroom {
+    padding: 16px;
+  }
+
+  .race-setup,
+  .race-stage,
+  .race-history {
+    padding: 16px;
+  }
+
+  .collection-grid {
+    gap: 13px;
+  }
+
+  .collection-art {
+    height: 205px;
+  }
+}
+
+@media (max-width: 370px) {
+  .app-shell {
+    width: calc(100% - 24px);
+  }
+
+  .brand {
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  .brand-mark {
+    width: 29px;
+    height: 29px;
+  }
+
+  .wallet-balances {
+    gap: 3px;
+  }
+
+  .wallet {
+    gap: 3px;
+    padding-inline: 6px;
+    font-size: 10px;
+  }
+
+  .currency-code {
+    font-size: 7px;
+  }
+
+  .car-art {
+    height: 190px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

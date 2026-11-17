@@ -59,6 +59,8 @@
     toast: document.querySelector("#toast"),
     navButtons: [...document.querySelectorAll("[data-screen]")],
     screens: [...document.querySelectorAll("[data-screen-panel]")],
+    gameCatalog: document.querySelector("#game-catalog"),
+    gameContent: document.querySelector("#game-content"),
     raceCar: document.querySelector("#race-car"),
     raceType: document.querySelector("#race-type"),
     raceOpponent: document.querySelector("#race-opponent"),
@@ -76,15 +78,16 @@
     raceWins: document.querySelector("#race-wins"),
     raceLosses: document.querySelector("#race-losses"),
     raceRewards: document.querySelector("#race-rewards"),
-    collectionCount: document.querySelector("#collection-count"),
-    collectionGrid: document.querySelector("#collection-grid"),
     taskList: document.querySelector("#task-list"),
     profileLevel: document.querySelector("#profile-level"),
     profileXpLabel: document.querySelector("#profile-xp-label"),
     profileXpBar: document.querySelector("#profile-xp-bar"),
     profileRaces: document.querySelector("#profile-races"),
     profileWins: document.querySelector("#profile-wins"),
-    profileCars: document.querySelector("#profile-cars")
+    profileCars: document.querySelector("#profile-cars"),
+    profileCredits: document.querySelector("#profile-credits"),
+    profileTechCores: document.querySelector("#profile-tech-cores"),
+    profileAchievements: document.querySelector("#profile-achievements")
   };
 
   let shouldPersistLoadedState = false;
@@ -116,6 +119,12 @@
   elements.buyButton.addEventListener("click", buyCar);
   elements.navButtons.forEach((button) => {
     button.addEventListener("click", () => setScreen(button.dataset.screen));
+  });
+  document.querySelectorAll("[data-open-game]").forEach((button) => {
+    button.addEventListener("click", () => openGame(button.dataset.openGame));
+  });
+  document.querySelectorAll("[data-return-gamehub]").forEach((button) => {
+    button.addEventListener("click", showGameHub);
   });
   document.querySelectorAll("[data-go-screen]").forEach((button) => {
     button.addEventListener("click", () => setScreen(button.dataset.goScreen));
@@ -255,7 +264,6 @@
     elements.cars.innerHTML = state.cars.map(renderCar).join("");
     renderRaceSetup();
     renderRaceStatistics();
-    renderCollection();
     renderTasks();
     renderProfile();
   }
@@ -267,11 +275,13 @@
     const safeTrim = escapeHtml(car.trim);
     const safePlate = escapeHtml(car.plate);
     const safeParts = car.parts.map(escapeHtml).join(" · ");
+    const rarity = getCarRarity(car);
 
     return `
       <article class="car-card${selected ? " is-selected" : ""}">
         <div class="car-art">
-          <span class="car-tag">${escapeHtml(car.trim)}</span>
+          <span class="car-tag">${safeTrim}</span>
+          <span class="car-rarity rarity-${rarity.className}">${rarity.label}</span>
           <button class="select-control" type="button" data-select-car="${safeId}"
             aria-label="${selected ? "Убрать" : "Выбрать"} ${safeName} для объединения"
             aria-pressed="${selected}">${selected ? "✓" : "+"}</button>
@@ -290,6 +300,7 @@
             <div><span class="stat-value">${formatNumber(car.speed)} <small>км/ч</small></span><span class="stat-label">МАКС. СКОРОСТЬ</span></div>
             <div><span class="stat-value">${car.accel.toFixed(1)}<small>с</small></span><span class="stat-label">0–100 КМ/Ч</span></div>
           </div>
+          <div class="car-market-value"><span>СТОИМОСТЬ В АВТОСАЛОНЕ</span><strong>◈ ${formatNumber(SHOWROOM_PRICE_CREDITS)} CR</strong></div>
           <div class="car-plate"><span>НОМЕР АВТОМОБИЛЯ</span><strong>${safePlate}</strong></div>
         </div>
       </article>`;
@@ -297,41 +308,25 @@
 
   function renderCarIllustration(car) {
     if (typeof car.image === "string" && /^assets\/cars\/[a-z0-9_-]+\.webp$/i.test(car.image)) {
-      return `<img class="car-photo" src="${car.image}" alt="${escapeHtml(car.name)}">`;
+      return `<img class="car-photo" src="${car.image}" alt="${escapeHtml(car.name)}" loading="lazy">`;
     }
-    const color = car.color;
-    const gradientId = `paint-${escapeAttribute(car.id).replace(/[^a-zA-Z0-9_-]/g, "")}`;
+    const accent = /^#[\da-f]{6}$/i.test(car.color) ? car.color : "#c6f36b";
+    const initials = car.name.trim().split(/\s+/).slice(0, 2).map((part) => part[0] || "").join("").toUpperCase();
     return `
-      <svg viewBox="0 0 360 150" role="img" aria-label="${escapeHtml(car.name)}, автомобиль">
-        <defs>
-          <linearGradient id="${gradientId}" x1="0" y1="0" x2="0.8" y2="1">
-            <stop offset="0" stop-color="#fff" stop-opacity=".48"></stop>
-            <stop offset=".25" stop-color="${color}"></stop>
-            <stop offset="1" stop-color="${color}" stop-opacity=".72"></stop>
-          </linearGradient>
-          <linearGradient id="${gradientId}-glass" x1="0" y1="0" x2="0" y2="1">
-            <stop stop-color="#9caea6"></stop><stop offset="1" stop-color="#303a37"></stop>
-          </linearGradient>
-        </defs>
-        <ellipse cx="180" cy="128" rx="131" ry="8" fill="#050706" opacity=".55"></ellipse>
-        <path d="M37 101c5-7 13-12 25-15l29-6 28-29c8-8 17-12 31-13l53-2c13 0 22 4 32 13l31 30 32 8c9 3 14 8 17 17l3 13H29l2-9c1-3 3-5 6-7z" fill="#111614" opacity=".7"></path>
-        <path d="M60 92l34-8 28-28c7-7 15-10 27-11l51-2c11 0 19 3 27 11l30 29 32 8c6 2 10 5 12 11H48c2-5 6-8 12-10z" fill="url(#${gradientId})" stroke="#fff" stroke-opacity=".22" stroke-width="1.5"></path>
-        <path d="M125 58c7-7 14-10 25-11l22-1v34H96l29-22z" fill="url(#${gradientId}-glass)" stroke="#dce6e0" stroke-opacity=".19"></path>
-        <path d="M180 46l20-1c10 0 17 3 25 10l23 24h-68V46z" fill="url(#${gradientId}-glass)" stroke="#dce6e0" stroke-opacity=".19"></path>
-        <path d="M49 103h260l12 4 1 9H35l2-8 12-5z" fill="#161c19"></path>
-        <path d="M42 102l20-1-2 7H39z" fill="#f3f1d4"></path>
-        <path d="M296 100l14 3 6 6h-18z" fill="#f25f49"></path>
-        <path d="M104 85h30m23 0h46" stroke="#fff" stroke-opacity=".24" stroke-width="1"></path>
-        <path d="M56 96h243" stroke="#fff" stroke-opacity=".16"></path>
-        <circle cx="97" cy="111" r="20" fill="#111413" stroke="#55605a" stroke-width="2"></circle>
-        <circle cx="97" cy="111" r="11" fill="#29302c" stroke="#9ba39d" stroke-width="2"></circle>
-        <circle cx="97" cy="111" r="3" fill="#bbc2bd"></circle>
-        <path d="M97 101v20m-10-10h20m-17-7 14 14m0-14-14 14" stroke="#89928b" stroke-width="1"></path>
-        <circle cx="265" cy="111" r="20" fill="#111413" stroke="#55605a" stroke-width="2"></circle>
-        <circle cx="265" cy="111" r="11" fill="#29302c" stroke="#9ba39d" stroke-width="2"></circle>
-        <circle cx="265" cy="111" r="3" fill="#bbc2bd"></circle>
-        <path d="M265 101v20m-10-10h20m-17-7 14 14m0-14-14 14" stroke="#89928b" stroke-width="1"></path>
-      </svg>`;
+      <div class="vehicle-visual" style="--vehicle-accent:${accent}" role="img" aria-label="${escapeHtml(car.name)} — фотослот">
+        <span class="visual-index">AUTOGEN <i></i> VEHICLE ARCHIVE</span>
+        <span class="visual-orbit visual-orbit-one" aria-hidden="true"></span>
+        <span class="visual-orbit visual-orbit-two" aria-hidden="true"></span>
+        <span class="visual-initials" aria-hidden="true">${escapeHtml(initials)}</span>
+        <span class="visual-caption"><strong>ФОТО АВТОМОБИЛЯ</strong><small>ИЗОБРАЖЕНИЕ МОЖНО ДОБАВИТЬ</small></span>
+        <span class="visual-coordinate" aria-hidden="true">AG / ${escapeHtml(String(car.level).padStart(2, "0"))}</span>
+      </div>`;
+  }
+
+  function getCarRarity(car) {
+    if (car.level >= 5) return { label: "ЭПИЧЕСКИЙ", className: "epic" };
+    if (car.level >= 3) return { label: "РЕДКИЙ", className: "rare" };
+    return { label: "СТАНДАРТ", className: "standard" };
   }
 
   function toggleSelection(id) {
@@ -470,7 +465,20 @@
       if (isActive) button.setAttribute("aria-current", "page");
       else button.removeAttribute("aria-current");
     });
+    if (screen === "games") showGameHub();
     window.scrollTo?.({ top: 0, behavior: "smooth" });
+  }
+
+  function openGame(gameId) {
+    if (gameId !== "races") return;
+    setScreen("games");
+    elements.gameCatalog.hidden = true;
+    elements.gameContent.hidden = false;
+  }
+
+  function showGameHub() {
+    elements.gameCatalog.hidden = false;
+    elements.gameContent.hidden = true;
   }
 
   function renderRaceSetup() {
@@ -518,10 +526,15 @@
 
     elements.trackPlayer.innerHTML = renderCarIllustration(car);
     elements.trackOpponent.innerHTML = renderCarIllustration(opponent.car);
+    const playerScore = raceType.power(car);
+    const opponentScore = raceType.power(opponent.car);
+    const scoreMax = Math.max(playerScore, opponentScore, 1);
     elements.raceComparison.innerHTML = `
       <div class="comparison-heading"><span>СРАВНЕНИЕ · ${raceType.label.toUpperCase()}</span><span>${raceType.description}</span></div>
       <div class="comparison-row"><span>${escapeHtml(car.name)}</span><strong>${car.hp} л.с. · ${car.speed} км/ч · ${car.accel.toFixed(1)} с</strong></div>
-      <div class="comparison-row"><span>${escapeHtml(opponent.car.name)}</span><strong>${opponent.car.hp} л.с. · ${opponent.car.speed} км/ч · ${opponent.car.accel.toFixed(1)} с</strong></div>`;
+      <div class="comparison-meter"><span style="width:${Math.round(playerScore / scoreMax * 100)}%"></span></div>
+      <div class="comparison-row"><span>${escapeHtml(opponent.car.name)}</span><strong>${opponent.car.hp} л.с. · ${opponent.car.speed} км/ч · ${opponent.car.accel.toFixed(1)} с</strong></div>
+      <div class="comparison-meter is-opponent"><span style="width:${Math.round(opponentScore / scoreMax * 100)}%"></span></div>`;
   }
 
   function renderRaceStatistics() {
@@ -530,19 +543,6 @@
     elements.raceWins.textContent = formatNumber(stats.wins);
     elements.raceLosses.textContent = formatNumber(stats.losses);
     elements.raceRewards.textContent = formatNumber(stats.rewards);
-  }
-
-  function renderCollection() {
-    elements.collectionCount.textContent = String(state.cars.length).padStart(2, "0");
-    elements.collectionGrid.innerHTML = state.cars.map((car) => `
-      <article class="collection-card">
-        <div class="collection-art">${renderCarIllustration(car)}</div>
-        <div class="collection-info">
-          <div class="car-name-row"><h2 class="car-name">${escapeHtml(car.name)}</h2><span class="car-level">УР. ${car.level}</span></div>
-          <p>${escapeHtml(car.trim)}</p>
-          <span>${formatNumber(car.hp)} л.с. <i></i> ${formatNumber(car.speed)} км/ч</span>
-        </div>
-      </article>`).join("");
   }
 
   function renderTasks() {
@@ -558,7 +558,7 @@
         <span class="task-marker" aria-hidden="true">${complete ? "✓" : "0" + (tasks.indexOf(task) + 1)}</span>
         <div class="task-copy"><span class="eyebrow">${complete ? "ВЫПОЛНЕНО" : "ЦЕЛЬ"}</span><h2>${task.title}</h2><p>${task.detail}</p></div>
         <div class="task-progress"><strong>${task.current} / ${task.target}</strong><div><span style="width:${Math.round(task.current / task.target * 100)}%"></span></div></div>
-        <button class="text-button" type="button" data-go-screen="${task.title === "Своя команда" ? "garage" : "races"}">${task.title === "Своя команда" ? "В гараж" : "К гонкам"} <span aria-hidden="true">↗</span></button>
+        <button class="text-button" type="button" data-go-screen="${task.title === "Своя команда" ? "garage" : "games"}">${task.title === "Своя команда" ? "В гараж" : "К играм"} <span aria-hidden="true">↗</span></button>
       </article>`;
     }).join("");
     elements.taskList.querySelectorAll("[data-go-screen]").forEach((button) => {
@@ -578,6 +578,20 @@
     elements.profileRaces.textContent = formatNumber(stats.total);
     elements.profileWins.textContent = formatNumber(stats.wins);
     elements.profileCars.textContent = formatNumber(state.cars.length);
+    elements.profileCredits.textContent = formatNumber(state.credits);
+    elements.profileTechCores.textContent = formatNumber(state.techCores);
+
+    const achievements = [
+      { title: "Первый старт", detail: "Завершить первую гонку", unlocked: stats.total >= 1 },
+      { title: "Триумфатор", detail: "Одержать три победы", unlocked: stats.wins >= 3 },
+      { title: "Покоритель кольца", detail: "Победить Pro в заезде на кольце · +1 TC", unlocked: state.techCoreAchievements.includes("pro-circuit-win") }
+    ];
+    elements.profileAchievements.innerHTML = achievements.map((achievement) => `
+      <article class="achievement${achievement.unlocked ? " is-unlocked" : ""}">
+        <span class="achievement-mark" aria-hidden="true">${achievement.unlocked ? "✓" : "—"}</span>
+        <div><h3>${achievement.title}</h3><p>${achievement.detail}</p></div>
+        <span class="achievement-state">${achievement.unlocked ? "ОТКРЫТО" : "ЗАКРЫТО"}</span>
+      </article>`).join("");
   }
 
   function startRace() {
