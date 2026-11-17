@@ -7,6 +7,7 @@
     <meta name="description" content="Собирай машины, объединяй их и создавай свой гараж AUTOGEN.">
     <title>AUTOGEN — твой гараж</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="app.js" defer></script>
   </head>
   <body>
@@ -16,14 +17,30 @@
           <span class="brand-mark" aria-hidden="true">A</span>
           <span>AUTO<span class="brand-light">GEN</span></span>
         </a>
-        <div class="wallet" aria-label="Баланс монет">
-          <span class="coin-icon" aria-hidden="true">◈</span>
-          <span id="coin-count">0</span>
-          <span class="wallet-label">монет</span>
+        <div class="wallet-balances" aria-label="Баланс игровых валют">
+          <div class="wallet wallet-credit" aria-label="Credits">
+            <span class="currency-icon" aria-hidden="true">◈</span>
+            <span id="credits-count">0</span>
+            <span class="currency-code">CR</span>
+          </div>
+          <div class="wallet wallet-tech" aria-label="Tech Cores">
+            <span class="currency-icon" aria-hidden="true">⬡</span>
+            <span id="tech-cores-count">0</span>
+            <span class="currency-code">TC</span>
+          </div>
         </div>
       </header>
 
+      <nav class="main-nav" aria-label="Главное меню">
+        <button class="nav-button is-active" type="button" data-screen="garage" aria-current="page">Гараж</button>
+        <button class="nav-button" type="button" data-screen="races">Гонки</button>
+        <button class="nav-button" type="button" data-screen="collection">Коллекция</button>
+        <button class="nav-button" type="button" data-screen="tasks">Задания</button>
+        <button class="nav-button" type="button" data-screen="profile">Профиль</button>
+      </nav>
+
       <main>
+        <section class="screen is-active" id="screen-garage" data-screen-panel="garage">
         <section class="intro" aria-labelledby="page-title">
           <div class="intro-copy">
             <p class="eyebrow"><span class="live-dot"></span> ТВОЯ КОЛЛЕКЦИЯ</p>
@@ -68,13 +85,150 @@
             <div>
               <p class="eyebrow">АВТОСАЛОН</p>
               <h2 id="showroom-title">Пополнение коллекции</h2>
-              <p>Каждый автомобиль уникален. Найди пару для своей первой машины.</p>
+              <p>Покупки — за Credits (CR). Tech Cores (TC) пригодятся для редких деталей, улучшений и особых слияний.</p>
             </div>
             <span class="showroom-symbol" aria-hidden="true">AG<span>01</span></span>
           </div>
           <button class="button button-secondary" id="buy-button" type="button">
-            Забрать автомобиль <span class="button-price"><span aria-hidden="true">◈</span> 1 200</span>
+            Забрать автомобиль <span class="button-price"><span aria-hidden="true">◈</span> 1 200 CR</span>
           </button>
+        </section>
+        </section>
+
+        <section class="screen" id="screen-races" data-screen-panel="races" hidden>
+          <div class="screen-heading">
+            <p class="eyebrow"><span class="live-dot"></span> ГОРОДСКАЯ СЕРИЯ</p>
+            <h1>Гонки<span class="title-period">.</span></h1>
+            <p class="intro-text">Выбери машину, настрой заезд и проверь себя на трассе.</p>
+          </div>
+
+          <div class="race-layout">
+            <section class="race-setup panel-card" aria-labelledby="race-setup-title">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">ПОДГОТОВКА</p>
+                  <h2 id="race-setup-title">Следующий заезд</h2>
+                </div>
+                <span class="race-index">01 / 01</span>
+              </div>
+              <label class="field-label" for="race-car">Твой автомобиль</label>
+              <select class="field-control" id="race-car"></select>
+              <label class="field-label" for="race-type">Тип гонки</label>
+              <select class="field-control" id="race-type">
+                <option value="sprint">Спринт — разгон и мощность</option>
+                <option value="circuit">Кольцо — сбалансированная трасса</option>
+                <option value="drag">Дрэг — скорость и ускорение</option>
+              </select>
+              <label class="field-label" for="race-opponent">Соперник</label>
+              <select class="field-control" id="race-opponent"></select>
+
+              <div class="stake-field">
+                <div>
+                  <label class="field-label" for="race-stake">Ставка <span>необязательно</span></label>
+                  <p>Победа: ставка ×2 и награда. Поражение: ставка сгорает.</p>
+                </div>
+                <div class="stake-input-wrap">
+                  <input class="field-control" id="race-stake" type="number" min="0" max="500" step="50" value="0" inputmode="numeric">
+                  <span>◈</span>
+                </div>
+              </div>
+              <p class="stake-limit" id="stake-limit">Доступно для ставки: 0 CR · максимум 500 CR</p>
+
+              <div class="race-comparison" id="race-comparison" aria-live="polite"></div>
+              <button class="button button-primary race-start" id="race-start" type="button">Начать гонку <span aria-hidden="true">↗</span></button>
+              <p class="race-disclaimer">Ставка только в CR и не выше баланса. Победа над Pro на кольце дает разовое достижение: +1 TC.</p>
+            </section>
+
+            <section class="race-stage panel-card" aria-labelledby="race-stage-title">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">ТРАНСЛЯЦИЯ</p>
+                  <h2 id="race-stage-title">Стартовая прямая</h2>
+                </div>
+                <span class="race-live"><span></span> LIVE</span>
+              </div>
+              <div class="race-track" id="race-track">
+                <div class="track-lane">
+                  <span class="lane-label">ТЫ</span>
+                  <div class="track-car track-car-player" id="track-player"></div>
+                </div>
+                <div class="track-lane">
+                  <span class="lane-label">СОПЕРНИК</span>
+                  <div class="track-car track-car-opponent" id="track-opponent"></div>
+                </div>
+                <div class="finish-line" aria-hidden="true"></div>
+                <div class="race-countdown" id="race-countdown">ГОТОВ К СТАРТУ</div>
+              </div>
+              <div class="race-stage-footer">
+                <span id="race-status">Настрой заезд и выходи на старт.</span>
+                <span class="stage-distance">400 М</span>
+              </div>
+              <div class="race-result" id="race-result" hidden aria-live="polite"></div>
+            </section>
+          </div>
+
+          <section class="race-history panel-card">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">ТВОЙ ПРОГРЕСС</p>
+                <h2>Статистика заездов</h2>
+              </div>
+            </div>
+            <div class="stat-strip">
+              <div><strong id="race-total">0</strong><span>ЗАЕЗДОВ</span></div>
+              <div><strong id="race-wins">0</strong><span>ПОБЕД</span></div>
+              <div><strong id="race-losses">0</strong><span>ПОРАЖЕНИЙ</span></div>
+              <div><strong id="race-rewards">0</strong><span>CR НАГРАД</span></div>
+            </div>
+          </section>
+        </section>
+
+        <section class="screen" id="screen-collection" data-screen-panel="collection" hidden>
+          <div class="screen-heading">
+            <p class="eyebrow">ТВОЙ АВТОПАРК</p>
+            <h1>Коллекция<span class="title-period">.</span></h1>
+            <p class="intro-text">Все автомобили, собранные в гараже AUTOGEN.</p>
+          </div>
+          <div class="collection-overview panel-card">
+            <span class="collection-count" id="collection-count">00</span>
+            <span>автомобилей в коллекции</span>
+            <button class="text-button" type="button" data-go-screen="garage">Перейти в гараж <span aria-hidden="true">↗</span></button>
+          </div>
+          <div class="collection-grid" id="collection-grid"></div>
+        </section>
+
+        <section class="screen" id="screen-tasks" data-screen-panel="tasks" hidden>
+          <div class="screen-heading">
+            <p class="eyebrow">ПУТЬ К МАСТЕРСТВУ</p>
+            <h1>Задания<span class="title-period">.</span></h1>
+            <p class="intro-text">Каждый заезд приближает к следующему уровню.</p>
+          </div>
+          <div class="task-list" id="task-list"></div>
+        </section>
+
+        <section class="screen" id="screen-profile" data-screen-panel="profile" hidden>
+          <div class="screen-heading">
+            <p class="eyebrow">ПИЛОТ AUTOGEN</p>
+            <h1>Профиль<span class="title-period">.</span></h1>
+            <p class="intro-text">Твоя история на улицах города.</p>
+          </div>
+          <section class="profile-card panel-card">
+            <div class="profile-emblem" aria-hidden="true">A</div>
+            <div class="profile-identity">
+              <p class="eyebrow">ВОДИТЕЛЬ</p>
+              <h2>Участник AUTOGEN</h2>
+              <span id="profile-level">УРОВЕНЬ 1</span>
+            </div>
+            <div class="profile-xp">
+              <div><span>Опыт гонщика</span><strong id="profile-xp-label">0 / 100 XP</strong></div>
+              <div class="xp-track"><span id="profile-xp-bar"></span></div>
+            </div>
+          </section>
+          <div class="profile-stats">
+            <article class="panel-card"><span>ГОНКИ</span><strong id="profile-races">0</strong></article>
+            <article class="panel-card"><span>ПОБЕДЫ</span><strong id="profile-wins">0</strong></article>
+            <article class="panel-card"><span>АВТОМОБИЛИ</span><strong id="profile-cars">0</strong></article>
+          </div>
         </section>
       </main>
 
