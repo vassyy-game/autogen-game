@@ -2679,6 +2679,82 @@ h1 {
   border-color: #303a39;
 }
 
+.showroom {
+  flex-wrap: wrap;
+}
+
+.showroom-copy {
+  min-width: 220px;
+  flex: 1 1 250px;
+}
+
+.showroom-preview {
+  display: flex;
+  min-width: 190px;
+  flex: 0 1 290px;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.showroom-preview-image {
+  position: relative;
+  width: 112px;
+  height: 72px;
+  flex: 0 0 112px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #101515;
+}
+
+.showroom-preview-image .car-photo {
+  object-position: center 57%;
+}
+
+.showroom-preview-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.showroom-preview-copy .eyebrow,
+.showroom-preview-copy > span:last-child {
+  color: var(--muted);
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+.showroom-preview-copy strong {
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.photo-fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(ellipse at 50% 70%, rgb(200 243 109 / 12%), transparent 48%),
+    linear-gradient(135deg, #202929, #111617 57%, #202626);
+  color: #a4afaa;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+
+.car-art .photo-fallback,
+.track-car .photo-fallback {
+  font-size: 10px;
+}
+
+.showroom-preview-image .photo-fallback {
+  font-size: 7px;
+}
+
 .button {
   min-height: 46px;
   border-radius: 9px;
@@ -2885,6 +2961,18 @@ h1 {
 @media (max-width: 650px) {
   body {
     padding-bottom: calc(78px + env(safe-area-inset-bottom));
+  }
+
+  .showroom-preview {
+    width: 100%;
+    min-width: 0;
+    flex-basis: auto;
+  }
+
+  .showroom-preview-image {
+    width: 104px;
+    height: 68px;
+    flex-basis: 104px;
   }
 
   .app-shell {

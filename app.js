@@ -17,6 +17,7 @@
   const STARTER_CREDITS = 2400;
   const STARTER_TECH_CORES = 3;
   const SHOWROOM_PRICE_CREDITS = 1200;
+  const CAR_CATALOG = Array.isArray(window.AUTOGEN_CAR_CATALOG) ? window.AUTOGEN_CAR_CATALOG : [];
   const TECH_CORE_ACHIEVEMENTS = ["pro-circuit-win"];
   const MAX_RACE_STAKE = 500;
   const RACE_TYPES = {
@@ -55,6 +56,7 @@
     selectionCount: document.querySelector("#selection-count"),
     mergeButton: document.querySelector("#merge-button"),
     buyButton: document.querySelector("#buy-button"),
+    showroomPreview: document.querySelector("#showroom-preview"),
     emptyState: document.querySelector("#empty-state"),
     toast: document.querySelector("#toast"),
     navButtons: [...document.querySelectorAll("[data-screen]")],
@@ -143,6 +145,16 @@
   elements.raceResult.addEventListener("click", (event) => {
     if (event.target.closest("#race-again")) prepareNextRace();
   });
+  document.addEventListener("error", (event) => {
+    const image = event.target;
+    if (!(image instanceof HTMLImageElement) || !image.classList.contains("car-photo")) return;
+    const fallback = document.createElement("div");
+    fallback.className = "photo-fallback";
+    fallback.setAttribute("role", "img");
+    fallback.setAttribute("aria-label", `${image.alt} — фотография недоступна`);
+    fallback.textContent = "ФОТО НЕДОСТУПНО";
+    image.replaceWith(fallback);
+  }, true);
 
   function initializeTelegram() {
     const telegram = window.Telegram?.WebApp;
@@ -259,9 +271,10 @@
     elements.carCount.textContent = String(state.cars.length).padStart(2, "0");
     elements.selectionCount.textContent = `Выбрано ${selectedIds.length} из 2`;
     elements.mergeButton.disabled = selectedIds.length !== 2 || raceInProgress;
-    elements.buyButton.disabled = state.credits < SHOWROOM_PRICE_CREDITS || raceInProgress;
+    elements.buyButton.disabled = state.credits < SHOWROOM_PRICE_CREDITS || raceInProgress || CAR_CATALOG.length === 0;
     elements.emptyState.hidden = state.cars.length !== 0;
     elements.cars.innerHTML = state.cars.map(renderCar).join("");
+    renderShowroomPreview();
     renderRaceSetup();
     renderRaceStatistics();
     renderTasks();
@@ -275,12 +288,13 @@
     const safeTrim = escapeHtml(car.trim);
     const safePlate = escapeHtml(car.plate);
     const safeParts = car.parts.map(escapeHtml).join(" · ");
+    const catalogCar = getCatalogCar(car);
     const rarity = getCarRarity(car);
 
     return `
       <article class="car-card${selected ? " is-selected" : ""}">
         <div class="car-art">
-          <span class="car-tag">${safeTrim}</span>
+          <span class="car-tag">${escapeHtml(catalogCar?.class || safeTrim)}</span>
           <span class="car-rarity rarity-${rarity.className}">${rarity.label}</span>
           <button class="select-control" type="button" data-select-car="${safeId}"
             aria-label="${selected ? "Убрать" : "Выбрать"} ${safeName} для объединения"
@@ -307,8 +321,10 @@
   }
 
   function renderCarIllustration(car) {
-    if (typeof car.image === "string" && /^assets\/cars\/[a-z0-9_-]+\.webp$/i.test(car.image)) {
-      return `<img class="car-photo" src="${car.image}" alt="${escapeHtml(car.name)}" loading="lazy">`;
+    const catalogCar = getCatalogCar(car);
+    const image = catalogCar?.image || car.image;
+    if (typeof image === "string" && /^assets\/cars\/[a-z0-9_-]+\.webp$/i.test(image)) {
+      return `<img class="car-photo" src="${escapeAttribute(image)}" alt="${escapeHtml(car.name)}" loading="lazy">`;
     }
     const accent = /^#[\da-f]{6}$/i.test(car.color) ? car.color : "#c6f36b";
     const initials = car.name.trim().split(/\s+/).slice(0, 2).map((part) => part[0] || "").join("").toUpperCase();
@@ -324,6 +340,13 @@
   }
 
   function getCarRarity(car) {
+    const catalogCar = getCatalogCar(car);
+    if (catalogCar) {
+      const rarity = catalogCar.rarity;
+      const className = rarity === "Common" ? "standard" : rarity === "Rare" ? "rare" : "epic";
+      const labels = { Common: "ОБЫЧНАЯ", Rare: "РЕДКАЯ", Epic: "ЭПИЧЕСКАЯ", Legendary: "ЛЕГЕНДАРНАЯ" };
+      return { label: labels[rarity] || "РЕДКАЯ", className };
+    }
     if (car.level >= 5) return { label: "ЭПИЧЕСКИЙ", className: "epic" };
     if (car.level >= 3) return { label: "РЕДКИЙ", className: "rare" };
     return { label: "СТАНДАРТ", className: "standard" };
@@ -386,15 +409,22 @@
       return;
     }
 
-    const model = randomItem(MODELS);
+    if (CAR_CATALOG.length === 0) {
+      showToast("Каталог автомобилей пока недоступен. Попробуйте позже.");
+      return;
+    }
+
+    const model = randomItem(CAR_CATALOG);
     const car = {
       id: createId(),
       name: model.name,
-      trim: model.trim,
+      catalogId: model.id,
+      image: model.image,
+      trim: model.class,
       color: randomItem(PALETTE),
-      hp: randomInt(230, 420),
-      speed: randomInt(230, 310),
-      accel: Number((randomInt(38, 65) / 10).toFixed(1)),
+      hp: model.hp,
+      speed: model.speed,
+      accel: model.accel,
       level: 1,
       parts: [randomItem(PARTS)],
       plate: createPlate()
@@ -404,6 +434,30 @@
       render();
       showToast(`${car.name} добавлена в гараж.`);
     }
+  }
+
+  function getCatalogCar(car) {
+    if (!car) return null;
+    return CAR_CATALOG.find((entry) =>
+      entry.id === car.catalogId ||
+      entry.name === car.name
+    ) || null;
+  }
+
+  function renderShowroomPreview() {
+    if (!elements.showroomPreview) return;
+    if (CAR_CATALOG.length === 0) {
+      elements.showroomPreview.innerHTML = `<p class="comparison-empty">Нет доступных автомобилей в каталоге.</p>`;
+      return;
+    }
+    const featured = CAR_CATALOG[0];
+    elements.showroomPreview.innerHTML = `
+        <div class="showroom-preview-image">${renderCarIllustration(featured)}</div>
+        <div class="showroom-preview-copy">
+          <span class="eyebrow">ФОТО ИЗ КАТАЛОГА · ${escapeHtml(featured.class.toUpperCase())}</span>
+          <strong>${escapeHtml(featured.name)}</strong>
+          <span>${CAR_CATALOG.length} автомобилей · случайная модель при покупке</span>
+        </div>`;
   }
 
   function createId() {
@@ -420,10 +474,6 @@
 
   function randomItem(items) {
     return items[Math.floor(Math.random() * items.length)];
-  }
-
-  function randomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
   function formatNumber(value) {

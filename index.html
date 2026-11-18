@@ -8,6 +8,7 @@
     <title>AUTOGEN — твой гараж</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="assets/cars/catalog.js" defer></script>
     <script src="app.js" defer></script>
   </head>
   <body>
@@ -96,14 +97,15 @@
         <section class="showroom" aria-labelledby="showroom-title">
           <div class="showroom-copy">
             <div>
-              <p class="eyebrow">АВТОСАЛОН</p>
-              <h2 id="showroom-title">Пополнение коллекции</h2>
-              <p>Покупки — за Credits (CR). Tech Cores (TC) пригодятся для редких деталей, улучшений и особых слияний.</p>
+              <p class="eyebrow">АВТОСАЛОН · РУЛЕТКА БОКСОВ</p>
+              <h2 id="showroom-title">Открой автомобильный бокс</h2>
+              <p>Получи случайный автомобиль из каталога. Покупка стоит 1 200 CR; Tech Cores (TC) остаются без изменений.</p>
             </div>
             <span class="showroom-symbol" aria-hidden="true">AG<span>01</span></span>
           </div>
+          <div class="showroom-preview" id="showroom-preview" aria-live="polite"></div>
           <button class="button button-secondary" id="buy-button" type="button">
-            Забрать автомобиль <span class="button-price"><span aria-hidden="true">◈</span> 1 200 CR</span>
+            Открыть бокс <span class="button-price"><span aria-hidden="true">◈</span> 1 200 CR</span>
           </button>
         </section>
         </section>
