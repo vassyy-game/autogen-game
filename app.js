@@ -343,9 +343,9 @@
     const catalogCar = getCatalogCar(car);
     if (catalogCar) {
       const rarity = catalogCar.rarity;
-      const className = rarity === "Common" ? "standard" : rarity === "Rare" ? "rare" : "epic";
+      const classNames = { Common: "standard", Rare: "rare", Epic: "epic", Legendary: "legendary" };
       const labels = { Common: "ОБЫЧНАЯ", Rare: "РЕДКАЯ", Epic: "ЭПИЧЕСКАЯ", Legendary: "ЛЕГЕНДАРНАЯ" };
-      return { label: labels[rarity] || "РЕДКАЯ", className };
+      return { label: labels[rarity] || "РЕДКАЯ", className: classNames[rarity] || "rare" };
     }
     if (car.level >= 5) return { label: "ЭПИЧЕСКИЙ", className: "epic" };
     if (car.level >= 3) return { label: "РЕДКИЙ", className: "rare" };
@@ -516,7 +516,8 @@
       else button.removeAttribute("aria-current");
     });
     if (screen === "games") showGameHub();
-    window.scrollTo?.({ top: 0, behavior: "smooth" });
+    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+    window.scrollTo?.({ top: 0, behavior });
   }
 
   function openGame(gameId) {
