@@ -4451,3 +4451,170 @@ h2 {
     flex-wrap: wrap;
   }
 }
+
+.car-art {
+  height: 210px;
+}
+
+.car-tag {
+  max-width: calc(100% - 164px);
+}
+
+.car-info {
+  padding: 14px 16px 12px;
+}
+
+.car-name {
+  font-size: 19px;
+}
+
+.car-stats {
+  gap: 5px;
+  margin: 11px 0 9px;
+  padding: 10px 0;
+}
+
+.stat-value {
+  font-size: 15px;
+}
+
+.stat-label {
+  font-size: 8px;
+}
+
+.car-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 9px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.car-meta strong {
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.vehicle-visual {
+  flex-direction: column;
+  gap: 4px;
+  background:
+    radial-gradient(ellipse at 50% 72%, color-mix(in srgb, var(--vehicle-accent) 15%, transparent), transparent 44%),
+    linear-gradient(135deg, #202929, #111617 57%, #202626);
+}
+
+.vehicle-visual::before {
+  background:
+    linear-gradient(112deg, transparent 0 34%, rgb(255 255 255 / 3%) 34.2%, transparent 34.5% 68%, rgb(255 255 255 / 3%) 68.2%, transparent 68.5%),
+    repeating-linear-gradient(0deg, transparent 0 24px, rgb(255 255 255 / 2%) 25px, transparent 26px);
+}
+
+.vehicle-visual::after {
+  right: -15%;
+  bottom: -132%;
+  left: -15%;
+  height: 180%;
+}
+
+.visual-initials {
+  color: rgb(255 255 255 / 11%);
+  font-size: clamp(36px, 8vw, 72px);
+}
+
+.visual-caption {
+  bottom: 11px;
+  left: 14px;
+  gap: 2px;
+}
+
+.visual-caption strong {
+  font-size: 8px;
+}
+
+.visual-caption small {
+  font-size: 7px;
+}
+
+.visual-coordinate {
+  right: 13px;
+  bottom: 12px;
+  font-size: 8px;
+}
+
+@media (max-width: 760px) {
+  body {
+    padding-bottom: calc(112px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 560px) {
+  .app-shell {
+    padding-inline: max(15px, env(safe-area-inset-left)) max(15px, env(safe-area-inset-right));
+  }
+
+  .car-grid {
+    gap: 11px;
+  }
+
+  .car-art {
+    height: clamp(132px, 40vw, 158px);
+  }
+
+  .car-info {
+    padding: 12px 14px 11px;
+  }
+
+  .car-name {
+    font-size: clamp(17px, 4.8vw, 19px);
+  }
+
+  .car-stats {
+    gap: 4px;
+    margin: 9px 0 8px;
+    padding: 9px 0;
+  }
+
+  .stat-value {
+    font-size: 14px;
+  }
+
+  .stat-label {
+    font-size: 8px;
+  }
+
+  .car-meta {
+    padding-top: 8px;
+    font-size: 9px;
+  }
+
+  .car-meta strong {
+    font-size: 10px;
+  }
+
+  .main-nav {
+    bottom: max(8px, env(safe-area-inset-bottom));
+  }
+
+  .nav-button {
+    min-height: 58px;
+  }
+}
+
+@media (max-width: 360px) {
+  .app-shell {
+    padding-inline: max(12px, env(safe-area-inset-left)) max(12px, env(safe-area-inset-right));
+  }
+}
+
+@media (min-width: 1000px) {
+  .car-art {
+    height: 210px;
+  }
+}

@@ -199,12 +199,15 @@
         throw new Error("Сохранение имеет неверный формат.");
       }
 
+      const hasDuplicateCarIds = new Set(parsed.cars.map((car) => car.id)).size !== parsed.cars.length;
+      const cars = hasDuplicateCarIds ? makeCarIdsUnique(parsed.cars) : parsed.cars;
       const raceStats = isValidRaceStats(parsed.raceStats) ? parsed.raceStats : { ...DEFAULT_RACE_STATS };
       shouldPersistLoadedState = parsed.credits === undefined ||
         parsed.techCores === undefined ||
         parsed.techCoreAchievements === undefined ||
-        parsed.coins !== credits;
-      return { credits, techCores, cars: parsed.cars, raceStats, techCoreAchievements };
+        parsed.coins !== credits ||
+        hasDuplicateCarIds;
+      return { credits, techCores, cars, raceStats, techCoreAchievements };
     } catch (error) {
       console.error("Не удалось загрузить сохранение AUTOGEN:", error);
       window.setTimeout(() => showToast("Не удалось загрузить сохранение. Начинаем новую игру."), 0);
@@ -239,6 +242,7 @@
     return Boolean(
       car &&
       typeof car.id === "string" &&
+      car.id.length > 0 &&
       typeof car.name === "string" &&
       typeof car.trim === "string" &&
       typeof car.color === "string" &&
@@ -247,10 +251,26 @@
       Number.isFinite(car.speed) &&
       Number.isFinite(car.accel) &&
       Number.isSafeInteger(car.level) &&
+      car.level > 0 &&
       Array.isArray(car.parts) &&
       car.parts.every((part) => typeof part === "string") &&
       typeof car.plate === "string"
     );
+  }
+
+  function makeCarIdsUnique(cars) {
+    const usedIds = new Set();
+    return cars.map((car) => {
+      if (!usedIds.has(car.id)) {
+        usedIds.add(car.id);
+        return car;
+      }
+
+      let id = createId();
+      while (usedIds.has(id)) id = createId();
+      usedIds.add(id);
+      return { ...car, id };
+    });
   }
 
   function saveState(nextState) {
@@ -314,15 +334,14 @@
             <div><span class="stat-value">${formatNumber(car.speed)} <small>км/ч</small></span><span class="stat-label">МАКС. СКОРОСТЬ</span></div>
             <div><span class="stat-value">${car.accel.toFixed(1)}<small>с</small></span><span class="stat-label">0–100 КМ/Ч</span></div>
           </div>
-          <div class="car-market-value"><span>СТОИМОСТЬ В АВТОСАЛОНЕ</span><strong>◈ ${formatNumber(SHOWROOM_PRICE_CREDITS)} CR</strong></div>
-          <div class="car-plate"><span>НОМЕР АВТОМОБИЛЯ</span><strong>${safePlate}</strong></div>
+          <div class="car-meta"><span>${safePlate}</span><strong>◈ ${formatNumber(SHOWROOM_PRICE_CREDITS)} CR</strong></div>
         </div>
       </article>`;
   }
 
   function renderCarIllustration(car) {
     const catalogCar = getCatalogCar(car);
-    const image = catalogCar?.image || car.image;
+    const image = catalogCar?.image;
     if (typeof image === "string" && /^assets\/cars\/[a-z0-9_-]+\.webp$/i.test(image)) {
       return `<img class="car-photo" src="${escapeAttribute(image)}" alt="${escapeHtml(car.name)}" loading="lazy">`;
     }
@@ -330,11 +349,8 @@
     const initials = car.name.trim().split(/\s+/).slice(0, 2).map((part) => part[0] || "").join("").toUpperCase();
     return `
       <div class="vehicle-visual" style="--vehicle-accent:${accent}" role="img" aria-label="${escapeHtml(car.name)} — фотослот">
-        <span class="visual-index">AUTOGEN <i></i> VEHICLE ARCHIVE</span>
-        <span class="visual-orbit visual-orbit-one" aria-hidden="true"></span>
-        <span class="visual-orbit visual-orbit-two" aria-hidden="true"></span>
         <span class="visual-initials" aria-hidden="true">${escapeHtml(initials)}</span>
-        <span class="visual-caption"><strong>ФОТО АВТОМОБИЛЯ</strong><small>ИЗОБРАЖЕНИЕ МОЖНО ДОБАВИТЬ</small></span>
+        <span class="visual-caption"><strong>ФОТО НЕДОСТУПНО</strong><small>${escapeHtml(car.trim)}</small></span>
         <span class="visual-coordinate" aria-hidden="true">AG / ${escapeHtml(String(car.level).padStart(2, "0"))}</span>
       </div>`;
   }
