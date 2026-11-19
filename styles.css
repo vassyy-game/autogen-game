@@ -1,13 +1,13 @@
 :root {
   color-scheme: dark;
-  --page: #101211;
-  --panel: #171a18;
-  --panel-raised: #1d211e;
-  --line: #2a2f2c;
-  --muted: #8c938e;
-  --text: #f2f4f0;
-  --accent: #c6f36b;
-  --accent-dark: #9acb42;
+  --page: #0B0C0F;
+  --panel: #14161B;
+  --panel-raised: #1C1F26;
+  --line: #2B2F38;
+  --muted: #9A9FAA;
+  --text: #F5F5F7;
+  --accent: #FF6B35;
+  --accent-dark: #D95127;
   --font-display: "Arial", sans-serif;
   --font-body: "Arial", sans-serif;
 }
@@ -26,7 +26,7 @@ body {
   min-height: 100vh;
   margin: 0;
   background:
-    radial-gradient(ellipse at 50% -20%, rgb(101 127 73 / 11%), transparent 48%),
+    radial-gradient(ellipse at 50% -20%, rgb(255 107 53 / 11%), transparent 48%),
     var(--page);
   color: var(--text);
   font-family: var(--font-body);
@@ -145,7 +145,7 @@ button {
   margin-right: 7px;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 12px rgb(198 243 107 / 55%);
+  box-shadow: 0 0 12px rgb(255 107 53 / 55%);
   vertical-align: 1px;
 }
 
@@ -236,7 +236,7 @@ h1 {
 
 .car-card.is-selected {
   border-color: var(--accent);
-  box-shadow: 0 0 0 1px rgb(198 243 107 / 17%), 0 12px 36px rgb(0 0 0 / 18%);
+  box-shadow: 0 0 0 1px rgb(255 107 53 / 17%), 0 12px 36px rgb(0 0 0 / 18%);
   transform: translateY(-2px);
 }
 
@@ -351,7 +351,7 @@ h1 {
 
 .car-level {
   padding: 4px 6px;
-  border: 1px solid rgb(198 243 107 / 22%);
+  border: 1px solid rgb(255 107 53 / 22%);
   border-radius: 4px;
   color: var(--accent);
   font-family: var(--font-display);
@@ -433,10 +433,10 @@ h1 {
   gap: 24px;
   margin-top: 22px;
   padding: 20px 22px;
-  border: 1px solid rgb(198 243 107 / 18%);
+  border: 1px solid rgb(255 107 53 / 18%);
   border-radius: 12px;
   background:
-    radial-gradient(ellipse at 0% 50%, rgb(198 243 107 / 8%), transparent 47%),
+    radial-gradient(ellipse at 0% 50%, rgb(255 107 53 / 8%), transparent 47%),
     #171b17;
 }
 
@@ -452,7 +452,7 @@ h1 {
   height: 40px;
   flex: 0 0 40px;
   place-items: center;
-  border: 1px solid rgb(198 243 107 / 25%);
+  border: 1px solid rgb(255 107 53 / 25%);
   border-radius: 9px;
   color: var(--accent);
   font-size: 21px;
@@ -515,7 +515,7 @@ h1 {
 }
 
 .button-primary:hover:not(:disabled) {
-  background: #d6ff82;
+  background: #FF8455;
 }
 
 .button:disabled {
@@ -782,9 +782,9 @@ h1 {
 }
 
 .game-card-featured {
-  border-color: rgb(200 243 109 / 20%);
+  border-color: rgb(255 107 53 / 20%);
   background:
-    radial-gradient(ellipse at 10% 110%, rgb(200 243 109 / 12%), transparent 58%),
+    radial-gradient(ellipse at 10% 110%, rgb(255 107 53 / 12%), transparent 58%),
     linear-gradient(140deg, #1a2322, #121718 70%);
 }
 
@@ -812,7 +812,7 @@ h1 {
 .game-card-art::before {
   inset: auto -20% -44%;
   height: 90%;
-  border: 1px solid rgb(200 243 109 / 22%);
+  border: 1px solid rgb(255 107 53 / 22%);
   border-radius: 50%;
   transform: perspective(200px) rotateX(62deg);
 }
@@ -840,7 +840,7 @@ h1 {
   position: absolute;
   width: 120px;
   height: 120px;
-  border: 1px solid rgb(200 243 109 / 16%);
+  border: 1px solid rgb(255 107 53 / 16%);
   border-radius: 50%;
   transform: scaleY(0.55) rotate(-23deg);
 }
@@ -1096,7 +1096,7 @@ h1 {
 }
 
 .leaderboard-emblem {
-  border-color: rgb(200 243 109 / 27%);
+  border-color: rgb(255 107 53 / 27%);
   color: var(--accent);
   font-family: var(--font-display);
   font-size: 20px;
@@ -1133,7 +1133,7 @@ h1 {
   padding: 16px;
   border: 1px solid #35403c;
   border-radius: 11px;
-  background: linear-gradient(135deg, rgb(200 243 109 / 6%), transparent 80%), #111617;
+  background: linear-gradient(135deg, rgb(255 107 53 / 6%), transparent 80%), #111617;
 }
 
 .currency-card > .currency-icon {
@@ -1142,9 +1142,9 @@ h1 {
   height: 40px;
   flex: 0 0 40px;
   place-items: center;
-  border: 1px solid rgb(200 243 109 / 24%);
+  border: 1px solid rgb(255 107 53 / 24%);
   border-radius: 12px;
-  background: rgb(200 243 109 / 6%);
+  background: rgb(255 107 53 / 6%);
   font-size: 21px;
 }
 
@@ -1205,8 +1205,8 @@ h1 {
 }
 
 .achievement.is-unlocked {
-  border-color: rgb(200 243 109 / 25%);
-  background: linear-gradient(110deg, rgb(200 243 109 / 5%), transparent 70%), #111617;
+  border-color: rgb(255 107 53 / 25%);
+  background: linear-gradient(110deg, rgb(255 107 53 / 5%), transparent 70%), #111617;
 }
 
 .achievement-mark {
@@ -1221,7 +1221,7 @@ h1 {
 }
 
 .achievement.is-unlocked .achievement-mark {
-  border-color: rgb(200 243 109 / 30%);
+  border-color: rgb(255 107 53 / 30%);
   color: var(--accent);
 }
 
@@ -1373,7 +1373,7 @@ h1 {
 
 .nav-button:hover,
 .nav-button.is-active {
-  background: rgb(198 243 107 / 8%);
+  background: rgb(255 107 53 / 8%);
   color: var(--accent);
 }
 
@@ -1493,7 +1493,7 @@ h1 {
 
 .field-control:focus {
   border-color: var(--accent-dark);
-  box-shadow: 0 0 0 2px rgb(198 243 107 / 9%);
+  box-shadow: 0 0 0 2px rgb(255 107 53 / 9%);
 }
 
 .field-control:disabled {
@@ -1629,7 +1629,7 @@ h1 {
   bottom: 0;
   left: 0;
   height: 24px;
-  background: repeating-linear-gradient(90deg, #c6f36b 0 12px, #192016 12px 24px);
+  background: repeating-linear-gradient(90deg, #FF6B35 0 12px, #192016 12px 24px);
   opacity: 0.16;
   content: "";
 }
@@ -1693,7 +1693,7 @@ h1 {
   z-index: 3;
   top: 50%;
   left: 50%;
-  color: rgb(198 243 107 / 88%);
+  color: rgb(255 107 53 / 88%);
   font-family: var(--font-display);
   font-size: clamp(18px, 3vw, 28px);
   font-weight: 700;
@@ -1734,9 +1734,9 @@ h1 {
 .race-result {
   margin-top: 14px;
   padding: 15px;
-  border: 1px solid rgb(198 243 107 / 26%);
+  border: 1px solid rgb(255 107 53 / 26%);
   border-radius: 8px;
-  background: rgb(198 243 107 / 6%);
+  background: rgb(255 107 53 / 6%);
 }
 
 .race-result.is-loss {
@@ -1926,8 +1926,8 @@ h1 {
 }
 
 .is-complete .task-marker {
-  border-color: rgb(198 243 107 / 38%);
-  background: rgb(198 243 107 / 9%);
+  border-color: rgb(255 107 53 / 38%);
+  background: rgb(255 107 53 / 9%);
   color: var(--accent);
 }
 
@@ -2203,14 +2203,14 @@ h1 {
 }
 
 :root {
-  --page: #0c0f10;
-  --panel: #14191a;
-  --panel-raised: #1b2223;
-  --line: #293233;
-  --muted: #899393;
-  --text: #f1f4ef;
-  --accent: #c8f36d;
-  --accent-dark: #9dc94e;
+  --page: #0B0C0F;
+  --panel: #14161B;
+  --panel-raised: #1C1F26;
+  --line: #2B2F38;
+  --muted: #9A9FAA;
+  --text: #F5F5F7;
+  --accent: #FF6B35;
+  --accent-dark: #D95127;
   --font-display: "Inter", "SF Pro Display", "Segoe UI", sans-serif;
   --font-body: "Inter", "SF Pro Text", "Segoe UI", sans-serif;
   --surface-shadow: 0 18px 50px rgb(0 0 0 / 24%);
@@ -2224,7 +2224,7 @@ html {
 
 body {
   background:
-    radial-gradient(ellipse at 12% 0%, rgb(200 243 109 / 7%), transparent 29rem),
+    radial-gradient(ellipse at 12% 0%, rgb(255 107 53 / 7%), transparent 29rem),
     radial-gradient(ellipse at 100% 25%, rgb(94 120 118 / 10%), transparent 31rem),
     linear-gradient(160deg, #0c0f10, #101516 56%, #0b0e0f);
   font-size: 14px;
@@ -2264,8 +2264,8 @@ input:focus-visible {
   width: 34px;
   height: 34px;
   border-radius: 8px;
-  background: rgb(200 243 109 / 5%);
-  box-shadow: 0 0 22px rgb(200 243 109 / 9%);
+  background: rgb(255 107 53 / 5%);
+  box-shadow: 0 0 22px rgb(255 107 53 / 9%);
 }
 
 .wallet {
@@ -2347,8 +2347,8 @@ h1 {
 }
 
 .nav-button.is-active {
-  border-color: rgb(200 243 109 / 15%);
-  background: linear-gradient(135deg, rgb(200 243 109 / 12%), rgb(200 243 109 / 5%));
+  border-color: rgb(255 107 53 / 15%);
+  background: linear-gradient(135deg, rgb(255 107 53 / 12%), rgb(255 107 53 / 5%));
   box-shadow: inset 0 1px rgb(255 255 255 / 4%);
 }
 
@@ -2384,7 +2384,7 @@ h1 {
 
 .car-card.is-selected {
   border-color: var(--accent);
-  box-shadow: 0 0 0 1px rgb(200 243 109 / 30%), 0 15px 40px rgb(0 0 0 / 30%);
+  box-shadow: 0 0 0 1px rgb(255 107 53 / 30%), 0 15px 40px rgb(0 0 0 / 30%);
 }
 
 .car-art {
@@ -2613,8 +2613,8 @@ h1 {
 
 .car-level {
   padding: 5px 7px;
-  border-color: rgb(200 243 109 / 23%);
-  background: rgb(200 243 109 / 5%);
+  border-color: rgb(255 107 53 / 23%);
+  background: rgb(255 107 53 / 5%);
 }
 
 .car-stats {
@@ -2669,9 +2669,9 @@ h1 {
 }
 
 .workshop {
-  border-color: rgb(200 243 109 / 20%);
+  border-color: rgb(255 107 53 / 20%);
   background:
-    radial-gradient(ellipse at 0% 50%, rgb(200 243 109 / 9%), transparent 52%),
+    radial-gradient(ellipse at 0% 50%, rgb(255 107 53 / 9%), transparent 52%),
     linear-gradient(135deg, #171d18, #14191a);
 }
 
@@ -2739,7 +2739,7 @@ h1 {
   display: grid;
   place-items: center;
   background:
-    radial-gradient(ellipse at 50% 70%, rgb(200 243 109 / 12%), transparent 48%),
+    radial-gradient(ellipse at 50% 70%, rgb(255 107 53 / 12%), transparent 48%),
     linear-gradient(135deg, #202929, #111617 57%, #202626);
   color: #a4afaa;
   font-size: 9px;
@@ -2767,13 +2767,13 @@ h1 {
 }
 
 .button-primary {
-  background: linear-gradient(135deg, #d2fa7b, #b9e65e);
-  box-shadow: 0 5px 18px rgb(185 230 94 / 12%);
+  background: linear-gradient(135deg, #FF6B35, #FF6B35);
+  box-shadow: 0 5px 18px rgb(255 107 53 / 12%);
 }
 
 .button-primary:hover:not(:disabled) {
-  background: #ddff91;
-  box-shadow: 0 8px 25px rgb(185 230 94 / 22%);
+  background: #FF8455;
+  box-shadow: 0 8px 25px rgb(255 107 53 / 22%);
 }
 
 .button-secondary {
@@ -2823,7 +2823,7 @@ h1 {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #91bf48, var(--accent));
+  background: linear-gradient(90deg, #FF6B35, var(--accent));
   transition: width 350ms ease;
 }
 
@@ -2835,7 +2835,7 @@ h1 {
   border-color: #303c3b;
   border-radius: 12px;
   background:
-    radial-gradient(ellipse at 50% 50%, rgb(200 243 109 / 5%), transparent 55%),
+    radial-gradient(ellipse at 50% 50%, rgb(255 107 53 / 5%), transparent 55%),
     repeating-linear-gradient(0deg, #141a19 0 42px, #1a201f 43px 44px);
 }
 
@@ -2862,8 +2862,8 @@ h1 {
 
 .race-result.is-win {
   background:
-    radial-gradient(ellipse at 100% 0%, rgb(200 243 109 / 14%), transparent 60%),
-    rgb(200 243 109 / 5%);
+    radial-gradient(ellipse at 100% 0%, rgb(255 107 53 / 14%), transparent 60%),
+    rgb(255 107 53 / 5%);
 }
 
 .race-result.is-loss {
@@ -3120,18 +3120,18 @@ h1 {
 /* AUTOGEN visual system */
 :root {
   color-scheme: dark;
-  --page: #0b0e10;
+  --page: #0B0C0F;
   --page-raised: #101518;
   --surface: #141a1d;
   --surface-raised: #1a2225;
   --surface-soft: #111719;
-  --line: #2a3438;
+  --line: #2B2F38;
   --line-strong: #3a474a;
-  --text: #f3f5f2;
-  --muted: #9aa5a4;
+  --text: #F5F5F7;
+  --muted: #9A9FAA;
   --subtle: #73807f;
-  --accent: #c8ee72;
-  --accent-strong: #d7fa82;
+  --accent: #FF6B35;
+  --accent-strong: #FF8455;
   --tech: #bba2f2;
   --danger: #ef8978;
   --font-display: "Inter", "SF Pro Display", "Segoe UI", sans-serif;
@@ -3159,7 +3159,7 @@ body {
   padding-right: env(safe-area-inset-right);
   padding-left: env(safe-area-inset-left);
   background:
-    radial-gradient(ellipse at 50% -18%, rgb(200 238 114 / 7%), transparent 34rem),
+    radial-gradient(ellipse at 50% -18%, rgb(255 107 53 / 7%), transparent 34rem),
     linear-gradient(160deg, var(--page), #101619 58%, var(--page));
   color: var(--text);
   font-family: var(--font-body);
@@ -3214,7 +3214,7 @@ input:focus-visible {
   width: 36px;
   height: 36px;
   border-radius: 9px;
-  background: linear-gradient(145deg, rgb(200 238 114 / 12%), rgb(200 238 114 / 3%));
+  background: linear-gradient(145deg, rgb(255 107 53 / 12%), rgb(255 107 53 / 3%));
   box-shadow: inset 0 1px rgb(255 255 255 / 8%);
 }
 
@@ -3341,15 +3341,15 @@ h2 {
 }
 
 .car-card.is-selected {
-  border-color: rgb(200 238 114 / 70%);
-  box-shadow: 0 0 0 1px rgb(200 238 114 / 18%), var(--shadow-panel);
+  border-color: rgb(255 107 53 / 70%);
+  box-shadow: 0 0 0 1px rgb(255 107 53 / 18%), var(--shadow-panel);
 }
 
 .car-art {
   height: clamp(190px, 23vw, 258px);
   border-bottom: 1px solid rgb(255 255 255 / 8%);
   background:
-    radial-gradient(ellipse at 50% 100%, rgb(200 238 114 / 7%), transparent 48%),
+    radial-gradient(ellipse at 50% 100%, rgb(255 107 53 / 7%), transparent 48%),
     linear-gradient(145deg, #202a2d, #101619 72%);
 }
 
@@ -3400,7 +3400,7 @@ h2 {
 
 .select-control:hover {
   border-color: var(--accent);
-  background: rgb(200 238 114 / 14%);
+  background: rgb(255 107 53 / 14%);
 }
 
 .car-info {
@@ -3417,7 +3417,7 @@ h2 {
 
 .car-level {
   border-radius: 7px;
-  background: rgb(200 238 114 / 6%);
+  background: rgb(255 107 53 / 6%);
 }
 
 .car-stats {
@@ -3495,15 +3495,15 @@ h2 {
 }
 
 .workshop {
-  border-color: rgb(200 238 114 / 24%);
-  background: linear-gradient(110deg, rgb(200 238 114 / 7%), transparent 58%), var(--surface);
+  border-color: rgb(255 107 53 / 24%);
+  background: linear-gradient(110deg, rgb(255 107 53 / 7%), transparent 58%), var(--surface);
 }
 
 .workshop-icon,
 .showroom-symbol {
-  border-color: rgb(200 238 114 / 26%);
+  border-color: rgb(255 107 53 / 26%);
   border-radius: 12px;
-  background: rgb(200 238 114 / 5%);
+  background: rgb(255 107 53 / 5%);
   color: var(--accent);
 }
 
@@ -3574,13 +3574,13 @@ h2 {
 
 .button-primary {
   background: var(--accent);
-  box-shadow: 0 6px 18px rgb(200 238 114 / 10%);
+  box-shadow: 0 6px 18px rgb(255 107 53 / 10%);
   color: #17200c;
 }
 
 .button-primary:hover:not(:disabled) {
   background: var(--accent-strong);
-  box-shadow: 0 8px 22px rgb(200 238 114 / 16%);
+  box-shadow: 0 8px 22px rgb(255 107 53 / 16%);
 }
 
 .button-secondary {
@@ -3648,8 +3648,8 @@ h2 {
 }
 
 .nav-button.is-active {
-  border-color: rgb(200 238 114 / 25%);
-  background: linear-gradient(145deg, rgb(200 238 114 / 13%), rgb(200 238 114 / 5%));
+  border-color: rgb(255 107 53 / 25%);
+  background: linear-gradient(145deg, rgb(255 107 53 / 13%), rgb(255 107 53 / 5%));
   box-shadow: inset 0 1px rgb(255 255 255 / 5%);
   color: var(--accent);
 }
@@ -3722,7 +3722,7 @@ h2 {
 
 .field-control:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgb(200 238 114 / 10%);
+  box-shadow: 0 0 0 3px rgb(255 107 53 / 10%);
 }
 
 .race-layout {
@@ -3754,7 +3754,7 @@ h2 {
 }
 
 .race-result.is-win {
-  border-color: rgb(200 238 114 / 30%);
+  border-color: rgb(255 107 53 / 30%);
 }
 
 .race-result.is-loss {
@@ -3795,7 +3795,7 @@ h2 {
 
 .profile-emblem {
   border-radius: 17px;
-  background: linear-gradient(145deg, rgb(200 238 114 / 10%), transparent);
+  background: linear-gradient(145deg, rgb(255 107 53 / 10%), transparent);
   box-shadow: inset 0 1px rgb(255 255 255 / 5%);
 }
 
@@ -3815,7 +3815,7 @@ h2 {
 
 .currency-card {
   border-color: var(--line);
-  background: linear-gradient(145deg, rgb(200 238 114 / 5%), transparent 75%), var(--surface-soft);
+  background: linear-gradient(145deg, rgb(255 107 53 / 5%), transparent 75%), var(--surface-soft);
 }
 
 .currency-card-tech {
@@ -3837,8 +3837,8 @@ h2 {
 }
 
 .achievement.is-unlocked {
-  border-color: rgb(200 238 114 / 25%);
-  background: linear-gradient(110deg, rgb(200 238 114 / 5%), transparent 75%), var(--surface-soft);
+  border-color: rgb(255 107 53 / 25%);
+  background: linear-gradient(110deg, rgb(255 107 53 / 5%), transparent 75%), var(--surface-soft);
 }
 
 .connection-badge,
@@ -3873,8 +3873,8 @@ h2 {
 }
 
 .game-card-featured {
-  border-color: rgb(200 238 114 / 26%);
-  background: linear-gradient(115deg, rgb(200 238 114 / 7%), transparent 54%), var(--surface);
+  border-color: rgb(255 107 53 / 26%);
+  background: linear-gradient(115deg, rgb(255 107 53 / 7%), transparent 54%), var(--surface);
 }
 
 .game-card-art {
@@ -4915,7 +4915,7 @@ h2 {
 
 .streak-calendar .is-active {
   border-color: var(--accent-dark);
-  background: rgb(198 243 107 / 9%);
+  background: rgb(255 107 53 / 9%);
   color: var(--accent);
 }
 
@@ -4982,5 +4982,200 @@ h2 {
 @media (prefers-reduced-motion: reduce) {
   .drop-capsule.is-large {
     animation: none;
+  }
+}
+
+:root {
+  color-scheme: dark;
+  --page: #0B0C0F;
+  --page-raised: #101216;
+  --panel: #14161B;
+  --panel-raised: #1C1F26;
+  --surface: #14161B;
+  --surface-raised: #1C1F26;
+  --surface-soft: #111318;
+  --line: #2B2F38;
+  --line-strong: #3A404A;
+  --text: #F5F5F7;
+  --muted: #9A9FAA;
+  --subtle: #747985;
+  --accent: #FF6B35;
+  --accent-strong: #FF8455;
+  --accent-dark: #D95127;
+  --tech: #B99DF5;
+  --danger: #EF8978;
+  --shadow-panel: 0 16px 38px rgb(0 0 0 / 28%), inset 0 1px rgb(255 255 255 / 3%);
+  --shadow-nav: 0 18px 48px rgb(0 0 0 / 48%), inset 0 1px rgb(255 255 255 / 5%);
+}
+
+html {
+  background: var(--page);
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 50% -18%, rgb(255 107 53 / 5%), transparent 34rem),
+    linear-gradient(160deg, var(--page), #101116 58%, var(--page));
+  color: var(--text);
+}
+
+.car-card,
+.collection-card,
+.panel-card,
+.game-card,
+.currency-card,
+.workshop,
+.showroom,
+.drops-panel,
+.streak-panel,
+.profile-currencies,
+.profile-achievements,
+.friends-panel,
+.leaderboard,
+.race-setup,
+.race-stage,
+.race-history,
+.task-card {
+  border-color: var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.workshop {
+  border-color: rgb(255 107 53 / 24%);
+  background: linear-gradient(110deg, rgb(255 107 53 / 6%), transparent 58%), var(--surface);
+}
+
+.showroom,
+.game-card-featured {
+  background: linear-gradient(120deg, rgb(255 255 255 / 2%), transparent 60%), var(--surface);
+}
+
+.car-art {
+  background:
+    radial-gradient(ellipse at 50% 70%, rgb(255 255 255 / 5%), transparent 44%),
+    linear-gradient(135deg, #1C1F26, #111318 57%, #20232A);
+}
+
+.vehicle-visual {
+  background:
+    radial-gradient(ellipse at 50% 70%, color-mix(in srgb, var(--vehicle-accent) 15%, transparent), transparent 44%),
+    linear-gradient(135deg, #1C1F26, #111318 57%, #20232A);
+}
+
+.game-card-art {
+  background:
+    repeating-linear-gradient(90deg, transparent 0 24px, rgb(255 255 255 / 3%) 25px, transparent 26px),
+    linear-gradient(145deg, #22252C, #111318 75%);
+}
+
+.main-nav {
+  border-color: var(--line);
+  background: rgb(11 12 15 / 94%);
+}
+
+.nav-button {
+  color: var(--muted);
+}
+
+.nav-button.is-active {
+  border-color: rgb(255 107 53 / 24%);
+  background: linear-gradient(145deg, rgb(255 107 53 / 12%), rgb(255 107 53 / 4%));
+  color: var(--accent);
+}
+
+.button-primary {
+  background: var(--accent);
+  box-shadow: 0 6px 18px rgb(255 107 53 / 12%);
+  color: #0B0C0F;
+}
+
+.button-primary:hover:not(:disabled) {
+  background: var(--accent-strong);
+  box-shadow: 0 8px 22px rgb(255 107 53 / 18%);
+}
+
+.button-secondary,
+.text-button,
+.game-back,
+.drop-skip {
+  border-color: var(--line-strong);
+  background: var(--surface-raised);
+  color: var(--text);
+}
+
+.button:disabled {
+  border-color: var(--line);
+  background: #22252C;
+  color: #777D88;
+}
+
+.is-selected .select-control {
+  color: #0B0C0F;
+}
+
+.field-control {
+  border-color: var(--line-strong);
+  background: #101216;
+  color: var(--text);
+}
+
+.field-control:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgb(255 107 53 / 12%);
+}
+
+.race-track {
+  border-color: var(--line);
+  background:
+    linear-gradient(90deg, transparent 49.8%, rgb(255 255 255 / 4%) 50%, transparent 50.2%),
+    repeating-linear-gradient(0deg, #15171C 0 41px, #1A1D23 42px 43px);
+}
+
+.race-track::after {
+  background: repeating-linear-gradient(90deg, var(--accent) 0 12px, #1C1F26 12px 24px);
+}
+
+.race-result.is-win {
+  border-color: rgb(116 155 124 / 38%);
+  background: rgb(116 155 124 / 7%);
+}
+
+.achievement.is-unlocked {
+  border-color: rgb(116 155 124 / 34%);
+  background: linear-gradient(110deg, rgb(116 155 124 / 7%), transparent 70%), var(--surface-soft);
+}
+
+.achievement.is-unlocked .achievement-mark,
+.is-complete .task-marker {
+  border-color: rgb(116 155 124 / 52%);
+  color: #91B39A;
+}
+
+.xp-track,
+.task-progress > div {
+  background: #30343D;
+}
+
+.toast {
+  border-color: var(--line-strong);
+  background: #1C1F26;
+  color: var(--text);
+}
+
+.drop-modal-card {
+  border-color: var(--line-strong);
+  background: var(--surface);
+  box-shadow: var(--shadow-panel);
+}
+
+.drop-modal-backdrop {
+  background: rgb(5 6 8 / 86%);
+}
+
+@media (max-width: 560px) {
+  .main-nav {
+    border-color: var(--line);
+    background: rgb(11 12 15 / 96%);
   }
 }
