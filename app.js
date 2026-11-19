@@ -32,6 +32,43 @@
   ];
   const DEFAULT_RACE_STATS = { total: 0, wins: 0, losses: 0, rewards: 0 };
   const PALETTE = ["#e56b4a", "#67a8d7", "#d4b86a", "#a58bd5", "#e7e8e2"];
+  const DROP_TYPES = [
+    { id: "common", name: "Common", label: "Обычная", className: "common" },
+    { id: "rare", name: "Rare", label: "Редкая", className: "rare" },
+    { id: "epic", name: "Epic", label: "Эпическая", className: "epic" },
+    { id: "legendary", name: "Legendary", label: "Легендарная", className: "legendary" }
+  ];
+  const DROP_PRICES = { common: 250, rare: 500, epic: 1000, legendary: 2000 };
+  const DROP_REWARD_TABLES = {
+    common: [
+      { chance: 80, reward: { type: "credits", amount: 180 } },
+      { chance: 20, reward: { type: "tc", amount: 1 } }
+    ],
+    rare: [
+      { chance: 65, reward: { type: "credits", amount: 500 } },
+      { chance: 35, reward: { type: "tc", amount: 2 } }
+    ],
+    epic: [
+      { chance: 55, reward: { type: "credits", amount: 1000 } },
+      { chance: 45, reward: { type: "car", catalogId: "civic-type-r" } }
+    ],
+    legendary: [
+      { chance: 50, reward: { type: "credits", amount: 2500 } },
+      { chance: 50, reward: { type: "car", catalogId: "bmw-m4-gt3" } }
+    ]
+  };
+  const REFERRAL_STAGES = [
+    { id: "r1", target: 1, reward: { type: "credits", amount: 300 } },
+    { id: "r3", target: 3, reward: { type: "tc", amount: 1 } },
+    { id: "r5", target: 5, reward: { type: "drop", drop: "common", amount: 1 } },
+    { id: "r10", target: 10, reward: { type: "drop", drop: "rare", amount: 1 } },
+    { id: "r25", target: 25, reward: { type: "drop", drop: "epic", amount: 1 } },
+    { id: "r50", target: 50, reward: { type: "car", catalogId: "bmw-m3" } }
+  ];
+  const DROP_REWARD_CARS = {
+    epic: "civic-type-r",
+    legendary: "bmw-m4-gt3"
+  };
   const MODELS = [
     { name: "Raven GT", trim: "GRAND TOURER" },
     { name: "Kairo S", trim: "STREET SPORT" },
@@ -89,7 +126,21 @@
     profileCars: document.querySelector("#profile-cars"),
     profileCredits: document.querySelector("#profile-credits"),
     profileTechCores: document.querySelector("#profile-tech-cores"),
-    profileAchievements: document.querySelector("#profile-achievements")
+    profileAchievements: document.querySelector("#profile-achievements"),
+    dropInventory: document.querySelector("#drop-inventory"),
+    dropList: document.querySelector("#drop-list"),
+    dropModal: document.querySelector("#drop-modal"),
+    dropModalArt: document.querySelector("#drop-modal-art"),
+    dropResult: document.querySelector("#drop-result"),
+    dropSkip: document.querySelector("#drop-skip"),
+    streakNextStage: document.querySelector("#streak-next-stage"),
+    referralCount: document.querySelector("#referral-count"),
+    referralLink: document.querySelector("#referral-link"),
+    copyReferral: document.querySelector("#copy-referral"),
+    referralStages: document.querySelector("#referral-stages"),
+    streakCount: document.querySelector("#streak-count"),
+    streakSave: document.querySelector("#streak-save"),
+    streakCalendar: document.querySelector("#streak-calendar")
   };
 
   let shouldPersistLoadedState = false;
@@ -109,9 +160,6 @@
   let activeScreen = "garage";
   let raceInProgress = false;
   let raceFinished = false;
-
-  initializeTelegram();
-  render();
 
   elements.cars.addEventListener("click", (event) => {
     const button = event.target.closest("[data-select-car]");
@@ -145,6 +193,17 @@
   elements.raceResult.addEventListener("click", (event) => {
     if (event.target.closest("#race-again")) prepareNextRace();
   });
+  elements.dropList.addEventListener("click", (event) => {
+    const openButton = event.target.closest("[data-open-drop]");
+    if (openButton) {
+      openDrop(openButton.dataset.openDrop);
+      return;
+    }
+    const buyButton = event.target.closest("[data-buy-drop]");
+    if (buyButton) buyDrop(buyButton.dataset.buyDrop);
+  });
+  elements.dropSkip.addEventListener("click", skipDropAnimation);
+  elements.dropModal.querySelector("[data-close-drop]").addEventListener("click", closeDropModal);
   document.addEventListener("error", (event) => {
     const image = event.target;
     if (!(image instanceof HTMLImageElement) || !image.classList.contains("car-photo")) return;
@@ -178,7 +237,14 @@
           techCores: STARTER_TECH_CORES,
           cars: [STARTER_CAR],
           raceStats: { ...DEFAULT_RACE_STATS },
-          techCoreAchievements: []
+          techCoreAchievements: [],
+          drops: { common: 0, rare: 0, epic: 0, legendary: 0 },
+          achievements: {},
+          daily: createInitialDaily(),
+          streak: createInitialStreak(),
+          referral: { confirmed: 0, claimed: [], pendingCode: null },
+          dropOpenPending: null,
+          dropReceipt: null
         };
       }
 
@@ -202,12 +268,31 @@
       const hasDuplicateCarIds = new Set(parsed.cars.map((car) => car.id)).size !== parsed.cars.length;
       const cars = hasDuplicateCarIds ? makeCarIdsUnique(parsed.cars) : parsed.cars;
       const raceStats = isValidRaceStats(parsed.raceStats) ? parsed.raceStats : { ...DEFAULT_RACE_STATS };
+      const drops = normalizeDrops(parsed.drops);
+      const achievements = isPlainObject(parsed.achievements) ? parsed.achievements : {};
+      const daily = normalizeDaily(parsed.daily);
+      const hasDailyBaseline = Number.isSafeInteger(parsed.daily?.baseline?.races) &&
+        Number.isSafeInteger(parsed.daily?.baseline?.wins) &&
+        Number.isSafeInteger(parsed.daily?.baseline?.cars);
+      if (!hasDailyBaseline) {
+        daily.baseline = { races: raceStats.total, wins: raceStats.wins, cars: cars.length };
+      }
+      const streak = normalizeStreak(parsed.streak);
+      const referral = normalizeReferral(parsed.referral);
+      const dropOpenPending = normalizePendingDrop(parsed.dropOpenPending);
+      const dropReceipt = normalizeDropReceipt(parsed.dropReceipt);
       shouldPersistLoadedState = parsed.credits === undefined ||
         parsed.techCores === undefined ||
         parsed.techCoreAchievements === undefined ||
         parsed.coins !== credits ||
+        parsed.drops === undefined ||
+        parsed.achievements === undefined ||
+        parsed.daily === undefined ||
+        !hasDailyBaseline ||
+        parsed.streak === undefined ||
+        parsed.referral === undefined ||
         hasDuplicateCarIds;
-      return { credits, techCores, cars, raceStats, techCoreAchievements };
+      return { credits, techCores, cars, raceStats, techCoreAchievements, drops, achievements, daily, streak, referral, dropOpenPending, dropReceipt };
     } catch (error) {
       console.error("Не удалось загрузить сохранение AUTOGEN:", error);
       window.setTimeout(() => showToast("Не удалось загрузить сохранение. Начинаем новую игру."), 0);
@@ -216,7 +301,14 @@
         techCores: 0,
         cars: [STARTER_CAR],
         raceStats: { ...DEFAULT_RACE_STATS },
-        techCoreAchievements: []
+        techCoreAchievements: [],
+        drops: { common: 0, rare: 0, epic: 0, legendary: 0 },
+        achievements: {},
+        daily: createInitialDaily(),
+        streak: createInitialStreak(),
+        referral: { confirmed: 0, claimed: [], pendingCode: null },
+        dropOpenPending: null,
+        dropReceipt: null
       };
     }
   }
@@ -236,6 +328,149 @@
       Number.isSafeInteger(stats.rewards) && stats.rewards >= 0 &&
       stats.wins + stats.losses === stats.total
     );
+  }
+
+  function isPlainObject(value) {
+    return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+  }
+
+  function normalizeDrops(value) {
+    const result = { common: 0, rare: 0, epic: 0, legendary: 0 };
+    for (const type of Object.keys(result)) {
+      if (Number.isSafeInteger(value?.[type]) && value[type] >= 0) result[type] = value[type];
+    }
+    return result;
+  }
+
+  function getUtcGameDay(date = new Date()) {
+    return date.toISOString().slice(0, 10);
+  }
+
+  function createInitialDaily() {
+    return {
+      date: getUtcGameDay(),
+      progress: { race: 0, win: 0, car: 0 },
+      baseline: { races: 0, wins: 0, cars: 1 },
+      claimed: [],
+      bonusClaimed: false
+    };
+  }
+
+  function normalizeDaily(value) {
+    const result = createInitialDaily();
+    if (!isPlainObject(value) || typeof value.date !== "string") return result;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value.date)) result.date = value.date;
+    result.progress = {
+      race: Number.isSafeInteger(value.progress?.race) ? Math.max(0, value.progress.race) : 0,
+      win: Number.isSafeInteger(value.progress?.win) ? Math.max(0, value.progress.win) : 0,
+      car: Number.isSafeInteger(value.progress?.car) ? Math.max(0, value.progress.car) : 0
+    };
+    result.claimed = Array.isArray(value.claimed)
+      ? [...new Set(value.claimed.filter((id) => ["race", "win", "car"].includes(id)))]
+      : [];
+    result.bonusClaimed = value.bonusClaimed === true;
+    result.baseline = {
+      races: Number.isSafeInteger(value.baseline?.races) ? Math.max(0, value.baseline.races) : 0,
+      wins: Number.isSafeInteger(value.baseline?.wins) ? Math.max(0, value.baseline.wins) : 0,
+      cars: Number.isSafeInteger(value.baseline?.cars) ? Math.max(0, value.baseline.cars) : 1
+    };
+    return result;
+  }
+
+  function createInitialStreak() {
+    return { count: 0, lastDay: null, missesUsed: 0, claimedDays: [] };
+  }
+
+  function normalizeStreak(value) {
+    const result = createInitialStreak();
+    if (!isPlainObject(value)) return result;
+    if (Number.isSafeInteger(value.count) && value.count >= 0) result.count = value.count;
+    if (typeof value.lastDay === "string") result.lastDay = value.lastDay;
+    if (Number.isSafeInteger(value.missesUsed) && value.missesUsed >= 0) result.missesUsed = value.missesUsed;
+    result.claimedDays = Array.isArray(value.claimedDays)
+      ? [...new Set(value.claimedDays.filter((day) => Number.isSafeInteger(day) && day > 0))]
+      : [];
+    return result;
+  }
+
+  function normalizeReferral(value) {
+    return {
+      confirmed: Number.isSafeInteger(value?.confirmed) ? Math.max(0, value.confirmed) : 0,
+      claimed: Array.isArray(value?.claimed) ? [...new Set(value.claimed.filter((id) => REFERRAL_STAGES.some((stage) => stage.id === id)))] : [],
+      pendingCode: typeof value?.pendingCode === "string" ? value.pendingCode.slice(0, 64) : null
+    };
+  }
+
+  function normalizePendingDrop(value) {
+    if (!isPlainObject(value) || typeof value.token !== "string" ||
+        !DROP_TYPES.some((drop) => drop.id === value.type) ||
+        !isPlainObject(value.reward)) return null;
+    const reward = value.reward;
+    const validCredits = reward.type === "credits" && Number.isSafeInteger(reward.amount) && reward.amount > 0;
+    const validCores = reward.type === "tc" && Number.isSafeInteger(reward.amount) && reward.amount > 0;
+    const validCar = reward.type === "car" &&
+      Object.values(DROP_REWARD_CARS).includes(reward.catalogId);
+    if (!validCredits && !validCores && !validCar) return null;
+    return { token: value.token, type: value.type, reward: { ...reward } };
+  }
+
+  function normalizeDropReceipt(value) {
+    const pending = normalizePendingDrop(value);
+    if (!pending) return null;
+    return { ...pending, acknowledged: value.acknowledged === true };
+  }
+
+  const ACHIEVEMENTS = [
+    ...buildAchievements("collector-cars", "Коллекционер", "Автомобилей в гараже", [1, 3, 5, 10, 15]),
+    ...buildAchievements("racer-runs", "Гонщик", "Завершённых заездов", [1, 5, 10, 25, 50]),
+    ...buildAchievements("racer-wins", "Гонщик", "Побед в заездах", [1, 3, 10, 25, 50]),
+    ...buildAchievements("drop-open", "Охотник за Drops", "Открытых AUTOGEN Drop", [1, 3, 10, 25, 50]),
+    ...buildAchievements("social-friends", "Социальный игрок", "Подтверждённых друзей", [1, 3, 5, 10, 25]),
+    ...buildAchievements("streak-days", "Постоянный игрок", "Дней ежедневной серии", [3, 7, 14, 30, 60]),
+    ...buildAchievements("daily-bonus", "Постоянный игрок", "Полных ежедневных бонусов", [1, 3, 7, 14, 30]),
+    ...buildAchievements("pro-circuit", "Редкие достижения", "Побед над соперником Pro на кольце", [1, 3, 5, 10, 20])
+  ].map((achievement, index) => ({ ...achievement, id: `${achievement.category}-${index + 1}` }));
+
+  function buildAchievements(category, titlePrefix, description, targets) {
+    return targets.map((target, index) => ({
+      category,
+      title: `${titlePrefix}: этап ${index + 1}`,
+      description: `${description}: ${target}`,
+      target,
+      reward: index === targets.length - 1
+        ? { type: "drop", drop: index >= 4 ? "epic" : "rare", amount: 1 }
+        : { type: index % 2 ? "tc" : "credits", amount: index % 2 ? 1 : 100 * (index + 1) }
+    }));
+  }
+
+  function synchronizeGameDay(nextState) {
+    const today = getUtcGameDay();
+    const reset = nextState.daily.date === today
+      ? nextState
+      : {
+        ...nextState,
+        daily: {
+          ...createInitialDaily(),
+          baseline: {
+            races: nextState.raceStats.total,
+            wins: nextState.raceStats.wins,
+            cars: nextState.cars.length
+          }
+        }
+      };
+    return updateDailyProgress(reset);
+  }
+
+  function updateDailyProgress(nextState) {
+    const progress = {
+      race: Math.max(nextState.daily.progress.race, nextState.raceStats.total > (nextState.daily.baseline?.races || 0) ? 1 : 0),
+      win: Math.max(nextState.daily.progress.win, nextState.raceStats.wins > (nextState.daily.baseline?.wins || 0) ? 1 : 0),
+      car: Math.max(nextState.daily.progress.car, nextState.cars.length > (nextState.daily.baseline?.cars ?? 0) ? 1 : 0)
+    };
+    return {
+      ...nextState,
+      daily: { ...nextState.daily, progress }
+    };
   }
 
   function isValidCar(car) {
@@ -275,14 +510,41 @@
 
   function saveState(nextState) {
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...nextState, coins: nextState.credits }));
-      state = nextState;
+      const currentDayState = synchronizeGameDay(nextState);
+      const carWasAdded = nextState.cars.length > state.cars.length;
+      const stateWithDailyProgress = carWasAdded
+        ? {
+          ...currentDayState,
+          daily: {
+            ...currentDayState.daily,
+            progress: { ...currentDayState.daily.progress, car: 1 }
+          }
+        }
+        : currentDayState;
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...stateWithDailyProgress, coins: stateWithDailyProgress.credits }));
+      state = stateWithDailyProgress;
       return true;
     } catch (error) {
       console.error("Не удалось сохранить прогресс AUTOGEN:", error);
       showToast("Не удалось сохранить прогресс. Проверьте настройки хранилища браузера.");
       return false;
     }
+
+  }
+
+  function recoverPendingDrop() {
+    const pending = state.dropOpenPending;
+    if (!pending) return;
+    const recovered = applyReward({
+      ...state,
+      dropOpenPending: null,
+      dropReceipt: { ...pending, acknowledged: false },
+      achievements: {
+        ...state.achievements,
+        dropOpen: (state.achievements.dropOpen || 0) + 1
+      }
+    }, pending.reward);
+    saveState(synchronizeAchievements(recovered));
   }
 
   function render() {
@@ -299,6 +561,9 @@
     renderRaceStatistics();
     renderTasks();
     renderProfile();
+    renderDrops();
+    renderStreak();
+    renderReferrals();
   }
 
   function renderCar(car) {
@@ -411,7 +676,7 @@
       credits: state.credits + 300,
       cars: [...state.cars.filter((car) => !selectedIds.includes(car.id)), newCar]
     };
-    if (saveState(nextState)) {
+    if (saveState(synchronizeAchievements(nextState))) {
       selectedIds = [];
       render();
       showToast(`Готово! ${newCar.name} создана. Бонус за слияние: 300 CR.`);
@@ -446,7 +711,7 @@
       plate: createPlate()
     };
     const nextState = { ...state, credits: state.credits - SHOWROOM_PRICE_CREDITS, cars: [...state.cars, car] };
-    if (saveState(nextState)) {
+    if (saveState(synchronizeAchievements(nextState))) {
       render();
       showToast(`${car.name} добавлена в гараж.`);
     }
@@ -613,24 +878,29 @@
   }
 
   function renderTasks() {
-    const stats = state.raceStats;
-    const tasks = [
-      { title: "Первый старт", detail: "Заверши первую гонку", current: Math.min(stats.total, 1), target: 1 },
-      { title: "Путь победителя", detail: "Одержи три победы", current: Math.min(stats.wins, 3), target: 3 },
-      { title: "Своя команда", detail: "Собери три автомобиля", current: Math.min(state.cars.length, 3), target: 3 }
+    const definitions = [
+      { id: "race", title: "Первый старт", detail: "Заверши гонку", target: 1, reward: "150 CR" },
+      { id: "win", title: "Путь победителя", detail: "Одержи победу", target: 1, reward: "Common Drop" },
+      { id: "car", title: "Своя команда", detail: "Увеличь гараж на один автомобиль", target: 1, reward: "1 TC" }
     ];
-    elements.taskList.innerHTML = tasks.map((task) => {
-      const complete = task.current === task.target;
+    elements.taskList.innerHTML = definitions.map((task) => {
+      const current = Math.min(state.daily.progress[task.id] || 0, task.target);
+      const complete = current >= task.target;
+      const claimed = state.daily.claimed.includes(task.id);
       return `<article class="task-card panel-card${complete ? " is-complete" : ""}">
-        <span class="task-marker" aria-hidden="true">${complete ? "✓" : "0" + (tasks.indexOf(task) + 1)}</span>
+        <span class="task-marker" aria-hidden="true">${complete ? "✓" : "0" + (definitions.indexOf(task) + 1)}</span>
         <div class="task-copy"><span class="eyebrow">${complete ? "ВЫПОЛНЕНО" : "ЦЕЛЬ"}</span><h2>${task.title}</h2><p>${task.detail}</p></div>
-        <div class="task-progress"><strong>${task.current} / ${task.target}</strong><div><span style="width:${Math.round(task.current / task.target * 100)}%"></span></div></div>
-        <button class="text-button" type="button" data-go-screen="${task.title === "Своя команда" ? "garage" : "games"}">${task.title === "Своя команда" ? "В гараж" : "К играм"} <span aria-hidden="true">↗</span></button>
+        <div class="task-progress"><strong>${current} / ${task.target}</strong><div><span style="width:${Math.round(current / task.target * 100)}%"></span></div><small>${task.reward}</small></div>
+        <button class="text-button" type="button" ${complete && !claimed ? `data-claim-daily="${task.id}"` : `data-go-screen="${task.id === "car" ? "garage" : "games"}"`}>${claimed ? "Получено" : complete ? "Получить" : task.id === "car" ? "В гараж" : "К играм"} <span aria-hidden="true">↗</span></button>
       </article>`;
     }).join("");
+    const allComplete = state.daily.claimed.length === 3;
+    elements.taskList.insertAdjacentHTML("beforeend", `<article class="task-card panel-card daily-bonus"><div class="task-copy"><span class="eyebrow">ОБЩИЙ БОНУС</span><h2>Три задания</h2><p>${allComplete ? "Все ежедневные награды получены." : "Получите награды за все три задания."}</p></div><button class="button button-secondary" type="button" data-claim-daily-bonus ${allComplete && !state.daily.bonusClaimed ? "" : "disabled"}>${state.daily.bonusClaimed ? "Получено" : "Получить бонус · Rare Drop"}</button></article>`);
     elements.taskList.querySelectorAll("[data-go-screen]").forEach((button) => {
       button.addEventListener("click", () => setScreen(button.dataset.goScreen));
     });
+    elements.taskList.querySelectorAll("[data-claim-daily]").forEach((button) => button.addEventListener("click", () => claimDaily(button.dataset.claimDaily)));
+    elements.taskList.querySelector("[data-claim-daily-bonus]")?.addEventListener("click", claimDailyBonus);
   }
 
   function renderProfile() {
@@ -648,17 +918,27 @@
     elements.profileCredits.textContent = formatNumber(state.credits);
     elements.profileTechCores.textContent = formatNumber(state.techCores);
 
-    const achievements = [
-      { title: "Первый старт", detail: "Завершить первую гонку", unlocked: stats.total >= 1 },
-      { title: "Триумфатор", detail: "Одержать три победы", unlocked: stats.wins >= 3 },
-      { title: "Покоритель кольца", detail: "Победить Pro в заезде на кольце · +1 TC", unlocked: state.techCoreAchievements.includes("pro-circuit-win") }
-    ];
-    elements.profileAchievements.innerHTML = achievements.map((achievement) => `
-      <article class="achievement${achievement.unlocked ? " is-unlocked" : ""}">
-        <span class="achievement-mark" aria-hidden="true">${achievement.unlocked ? "✓" : "—"}</span>
-        <div><h3>${achievement.title}</h3><p>${achievement.detail}</p></div>
-        <span class="achievement-state">${achievement.unlocked ? "ОТКРЫТО" : "ЗАКРЫТО"}</span>
-      </article>`).join("");
+    const progressValues = {
+      "collector-cars": state.cars.length,
+      "racer-runs": state.raceStats.total,
+      "racer-wins": state.raceStats.wins,
+      "drop-open": state.achievements.dropOpen || 0,
+      "social-friends": 0,
+      "streak-days": state.streak.count,
+      "daily-bonus": state.achievements.dailyBonus || 0,
+      "pro-circuit": state.achievements.proCircuit || 0
+    };
+    elements.profileAchievements.innerHTML = ACHIEVEMENTS.map((achievement) => {
+      const current = Math.min(progressValues[achievement.category] || 0, achievement.target);
+      const referralUnavailable = achievement.category === "social-friends";
+      const earned = !referralUnavailable &&
+        state.achievements[achievement.id]?.claimed === true;
+      return `<article class="achievement${earned ? " is-unlocked" : ""}">
+        <span class="achievement-mark" aria-hidden="true">${earned ? "✓" : "—"}</span>
+        <div><h3>${achievement.title}</h3><p>${achievement.description}</p><small>${current} / ${achievement.target}</small></div>
+        <span class="achievement-state">${referralUnavailable ? "ОЖИДАЕТ СЕРВЕР" : earned ? "НАГРАДА ПОЛУЧЕНА" : current >= achievement.target ? "ВЫПОЛНЕНО" : "В ПРОЦЕССЕ"}</span>
+      </article>`;
+    }).join("");
   }
 
   function startRace() {
@@ -711,15 +991,20 @@
     const won = playerScore + randomSwing >= rivalScore;
     const reward = won ? 180 + playerCar.level * 15 : 25;
     const payout = won ? stake * 2 + reward : reward;
-    const earnedAchievement = won &&
+    const proCircuitWin = won &&
       opponentId === "pro" &&
-      type === RACE_TYPES.circuit &&
-      !state.techCoreAchievements.includes("pro-circuit-win");
+      type === RACE_TYPES.circuit;
+    const earnedAchievement = proCircuitWin && !state.techCoreAchievements.includes("pro-circuit-win");
+    const firstCompletedRace = state.raceStats.total === 0;
     const updatedStats = {
       total: state.raceStats.total + 1,
       wins: state.raceStats.wins + (won ? 1 : 0),
       losses: state.raceStats.losses + (won ? 0 : 1),
       rewards: state.raceStats.rewards + reward
+    };
+    const nextAchievements = {
+      ...state.achievements,
+      proCircuit: (state.achievements.proCircuit || 0) + (proCircuitWin ? 1 : 0)
     };
     const nextState = {
       ...state,
@@ -728,9 +1013,13 @@
       techCoreAchievements: earnedAchievement
         ? [...state.techCoreAchievements, "pro-circuit-win"]
         : state.techCoreAchievements,
-      raceStats: updatedStats
+      raceStats: updatedStats,
+      achievements: nextAchievements,
+      drops: firstCompletedRace
+        ? { ...state.drops, common: state.drops.common + 1 }
+        : state.drops
     };
-    const saved = saveState(nextState);
+    const saved = saveState(synchronizeAchievements(nextState));
 
     elements.raceTrack.classList.remove("is-racing");
     elements.raceCountdown.textContent = won ? "ПОБЕДА" : "ФИНИШ";
@@ -741,6 +1030,7 @@
       <strong>${won ? "Победа." : "Поражение."}</strong>
       <p>${won ? `Награда за победу: +${formatNumber(reward)} CR.` : `Награда за участие: +${formatNumber(reward)} CR.`}</p>
       <p>${stake ? `Ставка ${won ? "возвращена в двойном размере" : "потеряна"}: ${formatNumber(stake)} CR.` : "Без ставки — только награда за заезд."}</p>
+      ${saved && firstCompletedRace ? "<p>Первый завершённый заезд: +1 Common Drop.</p>" : ""}
       ${earnedAchievement ? `<p class="tech-core-reward">Достижение «Покоритель кольца»: +1 TC.</p>` : ""}
       <button class="text-button race-again" id="race-again" type="button">Подготовить новый заезд <span aria-hidden="true">↗</span></button>`;
     elements.raceResult.hidden = false;
@@ -755,5 +1045,323 @@
     elements.raceCountdown.textContent = "ГОТОВ К СТАРТУ";
     elements.raceStatus.textContent = "Настрой заезд и выходи на старт.";
     renderRaceSetup();
+  }
+
+  function claimDaily(id) {
+    state = synchronizeGameDay(state);
+    if (!["race", "win", "car"].includes(id) ||
+        state.daily.claimed.includes(id) ||
+        (state.daily.progress[id] || 0) < 1) return;
+    const next = { ...state, daily: { ...state.daily, claimed: [...state.daily.claimed, id] } };
+    if (id === "race") next.credits += 150;
+    if (id === "win") next.drops = { ...next.drops, common: next.drops.common + 1 };
+    if (id === "car") next.techCores += 1;
+    if (saveState(synchronizeAchievements(next))) {
+      render();
+      showToast("Ежедневная награда получена.");
+    }
+  }
+
+  function claimDailyBonus() {
+    const dailyTaskIds = ["race", "win", "car"];
+    if (state.daily.bonusClaimed ||
+        !dailyTaskIds.every((id) => state.daily.claimed.includes(id) && state.daily.progress[id] >= 1)) return;
+    const next = {
+      ...state,
+      daily: { ...state.daily, bonusClaimed: true },
+      drops: { ...state.drops, rare: state.drops.rare + 1 },
+      achievements: {
+        ...state.achievements,
+        dailyBonus: (state.achievements.dailyBonus || 0) + 1
+      }
+    };
+    if (saveState(synchronizeAchievements(next))) {
+      render();
+      showToast("Бонус выполненных заданий: Rare Drop.");
+    }
+  }
+
+  function renderReferrals() {
+    elements.referralCount.textContent = "0";
+    elements.referralLink.textContent = "Подтверждение друзей пока недоступно";
+    elements.referralStages.innerHTML = REFERRAL_STAGES.map((stage) => {
+      return `<article class="referral-stage">
+        <strong>${stage.target}</strong><div><span>ДРУЗЕЙ</span><small>${rewardLabel(stage.reward)}</small></div>
+        <button class="text-button" type="button" disabled>Сервер не подключён</button>
+      </article>`;
+    }).join("");
+  }
+
+  function rewardLabel(reward) {
+    if (reward.type === "credits") return `${reward.amount} CR`;
+    if (reward.type === "tc") return `${reward.amount} TC`;
+    if (reward.type === "drop") return `${DROP_TYPES.find((drop) => drop.id === reward.drop)?.label || reward.drop} Drop`;
+    if (reward.type === "car") return CAR_CATALOG.find((car) => car.id === reward.catalogId)?.name || "Автомобиль";
+  }
+
+  function applyReward(nextState, reward) {
+    if (reward.type === "credits") return { ...nextState, credits: nextState.credits + reward.amount };
+    if (reward.type === "tc") return { ...nextState, techCores: nextState.techCores + reward.amount };
+    if (reward.type === "drop") return { ...nextState, drops: { ...nextState.drops, [reward.drop]: nextState.drops[reward.drop] + (reward.amount || 1) } };
+    if (reward.type === "car") {
+      const model = CAR_CATALOG.find((car) => car.id === reward.catalogId);
+      return model ? { ...nextState, cars: [...nextState.cars, catalogCarToGameCar(model)] } : nextState;
+    }
+    return nextState;
+  }
+
+  function catalogCarToGameCar(model) {
+    return {
+      id: createId(),
+      catalogId: model.id,
+      name: model.name,
+      trim: model.class,
+      color: randomItem(PALETTE),
+      hp: model.hp,
+      speed: model.speed,
+      accel: model.accel,
+      level: 1,
+      parts: [randomItem(PARTS)],
+      plate: createPlate()
+    };
+  }
+
+  let pendingDropOpen = null;
+  let dropAnimationTimer = null;
+  let dropPurchaseLocked = false;
+
+  function renderDrops() {
+    const total = Object.values(state.drops).reduce((sum, amount) => sum + amount, 0);
+    elements.dropInventory.textContent = `${total} КАПСУЛ`;
+    elements.dropList.innerHTML = DROP_TYPES.map((drop) => `
+      <article class="drop-card drop-${drop.className}">
+        <div class="drop-capsule" aria-hidden="true"><span></span><i></i></div>
+        <div><strong>${drop.label}</strong><span>${state.drops[drop.id]} шт.</span></div>
+        <div class="drop-actions">
+          <button class="text-button" type="button" data-open-drop="${drop.id}" ${state.drops[drop.id] > 0 ? "" : "disabled"}>Открыть</button>
+          <button class="text-button" type="button" data-buy-drop="${drop.id}" ${state.credits >= DROP_PRICES[drop.id] && !raceInProgress && !dropPurchaseLocked ? "" : "disabled"}>Купить · ${formatNumber(DROP_PRICES[drop.id])} CR</button>
+        </div>
+      </article>`).join("");
+  }
+
+  function buyDrop(dropId) {
+    if (raceInProgress || dropPurchaseLocked || !Object.prototype.hasOwnProperty.call(DROP_PRICES, dropId)) return;
+    const price = DROP_PRICES[dropId];
+    if (state.credits < price) {
+      showToast("Недостаточно Credits для покупки капсулы.");
+      return;
+    }
+
+    dropPurchaseLocked = true;
+    const nextState = {
+      ...state,
+      credits: state.credits - price,
+      drops: { ...state.drops, [dropId]: state.drops[dropId] + 1 }
+    };
+    if (!saveState(nextState)) {
+      dropPurchaseLocked = false;
+      renderDrops();
+      return;
+    }
+
+    render();
+    showToast(`${DROP_TYPES.find((drop) => drop.id === dropId).label} Drop куплен.`);
+    window.setTimeout(() => {
+      dropPurchaseLocked = false;
+      renderDrops();
+    }, 350);
+  }
+
+  function openDrop(dropId) {
+    if (!DROP_TYPES.some((drop) => drop.id === dropId) || state.drops[dropId] < 1 || pendingDropOpen) return;
+    const type = DROP_TYPES.find((drop) => drop.id === dropId);
+    const token = createId();
+    const reward = determineDropReward(dropId);
+    const awarded = applyReward({
+      ...state,
+      drops: { ...state.drops, [dropId]: state.drops[dropId] - 1 },
+      dropOpenPending: null,
+      dropReceipt: { token, type: dropId, reward, acknowledged: false },
+      achievements: {
+        ...state.achievements,
+        dropOpen: (state.achievements.dropOpen || 0) + 1
+      }
+    }, reward);
+    if (!saveState(synchronizeAchievements(awarded))) return;
+    pendingDropOpen = { token, capsule: type, reward };
+    showDropModal(type, reward);
+  }
+
+  function determineDropReward(dropId) {
+    const table = DROP_REWARD_TABLES[dropId];
+    if (!table || table.reduce((sum, entry) => sum + entry.chance, 0) !== 100) {
+      throw new Error(`Таблица наград AUTOGEN Drop «${dropId}» должна составлять 100%.`);
+    }
+    const roll = Math.random() * 100;
+    let threshold = 0;
+    for (const entry of table) {
+      threshold += entry.chance;
+      if (roll < threshold) return { ...entry.reward };
+    }
+    throw new Error(`Не удалось определить награду AUTOGEN Drop «${dropId}».`);
+  }
+
+  function showDropModal(capsule, reward) {
+    elements.dropModal.hidden = false;
+    elements.dropModalArt.className = `drop-modal-art drop-${capsule.className}`;
+    elements.dropModalArt.innerHTML = `<div class="drop-capsule is-large" aria-hidden="true"><span></span><i></i></div><h2 id="drop-modal-title">${capsule.label} Drop</h2>`;
+    elements.dropResult.innerHTML = "";
+    elements.dropSkip.hidden = false;
+    window.clearTimeout(dropAnimationTimer);
+    dropAnimationTimer = window.setTimeout(() => revealDropReward(reward), 1800);
+  }
+
+  function skipDropAnimation() {
+    if (!pendingDropOpen) return;
+    window.clearTimeout(dropAnimationTimer);
+    revealDropReward(pendingDropOpen.reward);
+  }
+
+  function revealDropReward(reward) {
+    if (!pendingDropOpen) return;
+    const receipt = state.dropReceipt;
+    pendingDropOpen = null;
+    elements.dropSkip.hidden = true;
+    if (receipt && receipt.acknowledged === false) {
+      saveState({ ...state, dropReceipt: { ...receipt, acknowledged: true } });
+    }
+    const model = reward.type === "car" ? CAR_CATALOG.find((car) => car.id === reward.catalogId) : null;
+    const item = model
+      ? `<img class="drop-reward-car" src="${escapeAttribute(model.image)}" alt="${escapeHtml(model.name)}">`
+      : "";
+    elements.dropResult.innerHTML = `<span>НАГРАДА ВЫДАНА</span>${item}<strong>${rewardLabel(reward)}</strong><button class="button button-primary" type="button" data-close-drop-confirm>Готово</button>`;
+    elements.dropResult.querySelector("[data-close-drop-confirm]").addEventListener("click", closeDropModal);
+    render();
+  }
+
+  function closeDropModal() {
+    if (pendingDropOpen) return;
+    elements.dropModal.hidden = true;
+    window.clearTimeout(dropAnimationTimer);
+    pendingDropOpen = null;
+  }
+
+  function claimStreakReward() {
+    const today = getUtcGameDay();
+    const firstLogin = !state.streak.lastDay;
+    if (!firstLogin && state.streak.lastDay === today) {
+      renderStreak();
+      return;
+    }
+    const previous = firstLogin ? null : new Date(`${state.streak.lastDay}T00:00:00Z`);
+    const current = new Date(`${today}T00:00:00Z`);
+    const gap = firstLogin ? 0 : Math.round((current - previous) / 86400000);
+    let missesUsed = state.streak.missesUsed;
+    let count = firstLogin ? 1 : state.streak.count;
+    if (!firstLogin && gap === 1) {
+      count += 1;
+    } else if (!firstLogin && gap === 2 && missesUsed < 1) {
+      count += 1;
+      missesUsed += 1;
+    } else if (!firstLogin) {
+      count = 1;
+      missesUsed = 0;
+    }
+    const next = {
+      ...state,
+      streak: {
+        count,
+        lastDay: today,
+        missesUsed,
+        claimedDays: [...new Set([...state.streak.claimedDays, count])]
+      }
+    };
+    if (!next.streak.claimedDays.includes(count)) next.streak.claimedDays.push(count);
+    const rewardDay = count;
+    if (count === 30) {
+      const model = CAR_CATALOG.find((car) => car.id === "bmw-m3" && car.rarity === "Rare");
+      if (model) next.cars = [...next.cars, catalogCarToGameCar(model)];
+    } else if (count > 30) {
+      if (count % 5 === 0) {
+        next.drops = {
+          ...next.drops,
+          common: next.drops.common + 1,
+          epic: next.drops.epic + (count % 10 === 0 ? 1 : 0)
+        };
+      } else {
+        next.credits += 250;
+      }
+    } else if (rewardDay === 1) {
+      next.credits += 100;
+    } else if (rewardDay <= 7) {
+      next.credits += 100 + rewardDay * 25;
+    } else if (rewardDay < 30) {
+      next.drops = { ...next.drops, rare: next.drops.rare + (rewardDay % 7 === 0 ? 1 : 0) };
+      next.credits += 250;
+    }
+    if (saveState(synchronizeAchievements(next))) render();
+  }
+
+  function renderStreak() {
+    elements.streakCount.textContent = String(state.streak.count);
+    elements.streakSave.textContent = state.streak.missesUsed < 1 ? "Пропуск доступен: 1" : "Пропуск использован";
+    const nextStage = state.streak.count < 30 ? 30 : (Math.floor(state.streak.count / 5) + 1) * 5;
+    const nextReward = getStreakRewardDescription(nextStage);
+    elements.streakNextStage.textContent = `Следующий этап: день ${nextStage} — ${nextReward} · серия ${state.streak.count}/${nextStage}`;
+    const visibleDays = Math.max(40, Math.ceil((state.streak.count + 1) / 10) * 10);
+    elements.streakCalendar.innerHTML = Array.from({ length: visibleDays }, (_, index) => {
+      const day = index + 1;
+      const active = day <= state.streak.count;
+      const milestone = day > 30 && day % 5 === 0;
+      const reward = getStreakRewardDescription(day);
+      return `<span class="${active ? "is-active" : ""} ${day === 30 ? "is-rare" : ""} ${milestone ? "is-milestone" : ""}"${reward ? ` title="День ${day}: ${reward}"` : ""}>${day}</span>`;
+    }).join("");
+  }
+
+  function getStreakRewardDescription(day) {
+    if (day === 30) return "BMW M3";
+    if (day <= 30) return "";
+    if (day % 5 !== 0) return "250 CR";
+    return day % 10 === 0 ? "Common + Epic Drop" : "Common Drop";
+  }
+
+  function synchronizeAchievements(nextState) {
+    const values = {
+      "collector-cars": nextState.cars.length,
+      "racer-runs": nextState.raceStats.total,
+      "racer-wins": nextState.raceStats.wins,
+      "drop-open": nextState.achievements.dropOpen || 0,
+      "social-friends": 0,
+      "streak-days": nextState.streak.count,
+      "daily-bonus": nextState.achievements.dailyBonus || 0,
+      "pro-circuit": nextState.achievements.proCircuit || 0
+    };
+    let updated = { ...nextState, achievements: { ...nextState.achievements } };
+    for (const achievement of ACHIEVEMENTS) {
+      const prefix = achievement.category;
+      const current = values[prefix] || 0;
+      if (current < achievement.target) continue;
+      const key = achievement.id;
+      if (updated.achievements[key]?.claimed === true) continue;
+      updated = applyReward(updated, achievement.reward);
+      updated.achievements[key] = { progress: current, claimed: true };
+    }
+    return updated;
+  }
+
+  state = synchronizeGameDay(state);
+  recoverPendingDrop();
+  claimStreakReward();
+  const initialProgress = synchronizeAchievements(state);
+  if (JSON.stringify(initialProgress) !== JSON.stringify(state)) saveState(initialProgress);
+  else state = initialProgress;
+  initializeTelegram();
+  render();
+  if (state.dropReceipt && !state.dropReceipt.acknowledged) {
+    const capsule = DROP_TYPES.find((drop) => drop.id === state.dropReceipt.type);
+    if (capsule) {
+      pendingDropOpen = { token: state.dropReceipt.token, capsule, reward: state.dropReceipt.reward };
+      showDropModal(capsule, state.dropReceipt.reward);
+    }
   }
 })();

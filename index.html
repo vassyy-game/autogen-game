@@ -90,6 +90,13 @@
             Открыть бокс <span class="button-price"><span aria-hidden="true">◈</span> 1 200 CR</span>
           </button>
         </section>
+        <section class="drops-panel panel-card" aria-labelledby="drops-title">
+          <div class="section-heading">
+            <div><p class="eyebrow">AUTOGEN DROPS</p><h2 id="drops-title">Механические капсулы</h2></div>
+            <span class="drop-inventory" id="drop-inventory">0 КАПСУЛ</span>
+          </div>
+          <div class="drop-list" id="drop-list"></div>
+        </section>
         </section>
 
         <section class="screen" id="screen-games" data-screen-panel="games" hidden>
@@ -222,19 +229,21 @@
           <section class="friends-panel panel-card" aria-labelledby="friends-title">
             <div class="panel-heading">
               <div><p class="eyebrow">СООБЩЕСТВО</p><h2 id="friends-title">Друзья AUTOGEN</h2></div>
-              <span class="connection-badge"><i></i> ОФЛАЙН-РЕЖИМ</span>
+              <span class="connection-badge"><i></i> ЛОКАЛЬНЫЙ ПРОГРЕСС</span>
             </div>
-            <label class="field-label" for="friend-search">Найти игрока</label>
-            <div class="friends-search">
-              <input class="field-control" id="friend-search" type="search" placeholder="Поиск будет доступен онлайн" disabled>
-              <button class="button button-secondary" type="button" disabled>Найти</button>
+            <div class="referral-summary">
+              <div><span>Подтверждено друзей</span><strong id="referral-count">0</strong></div>
+              <button class="button button-secondary" id="copy-referral" type="button" disabled>Сервер не подключён</button>
             </div>
-            <div class="friends-empty">
-              <span class="friends-empty-mark" aria-hidden="true">+</span>
-              <h3>Список друзей появится здесь</h3>
-              <p>Поиск и приглашения станут доступны после подключения сервера. Сейчас игра сохраняет прогресс только на этом устройстве.</p>
-              <button class="button button-secondary" type="button" disabled>Пригласить друга</button>
-            </div>
+            <code class="referral-link" id="referral-link"></code>
+            <div class="referral-stages" id="referral-stages"></div>
+            <p class="payment-note">Счётчик остаётся равным нулю, пока сервер не проверяет вход нового игрока и начальные действия. Неподтверждённые переходы по ссылке не засчитываются.</p>
+          </section>
+          <section class="panel-card streak-panel" aria-labelledby="streak-title">
+            <div class="panel-heading"><div><p class="eyebrow">ЕЖЕДНЕВНЫЙ ВХОД</p><h2 id="streak-title">Серия входов</h2></div></div>
+            <div class="streak-summary"><strong id="streak-count">1</strong><span>день серии</span><span id="streak-save">Пропуск доступен: 1</span></div>
+            <p class="payment-note" id="streak-next-stage"></p>
+            <div class="streak-calendar" id="streak-calendar"></div>
           </section>
         </section>
 
@@ -320,5 +329,13 @@
       </footer>
     </div>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="drop-modal" id="drop-modal" hidden role="dialog" aria-modal="true" aria-labelledby="drop-modal-title">
+      <div class="drop-modal-backdrop" data-close-drop></div>
+      <div class="drop-modal-card">
+        <button class="drop-skip" id="drop-skip" type="button">Пропустить</button>
+        <div class="drop-modal-art" id="drop-modal-art"></div>
+        <div class="drop-result" id="drop-result" aria-live="polite"></div>
+      </div>
+    </div>
   </body>
 </html>
